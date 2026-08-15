@@ -271,7 +271,7 @@ function ProfileStrip({ customer }: { customer: Customer }) {
         <div>
           <dt>Date of birth
           </dt>
-          <dd>{new Date(`${customer.dob}T00:00`).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+          <dd>{new Date(`${customer.dob}T00:00`).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
           </dd>
         </div>
         <div>
@@ -310,7 +310,8 @@ function CustomerOverview({ customer, onNavigate }: { customer: Customer; onNavi
         </span>
         <ChevronRight />
       </button>
-      <button className="summary-card" onClick={() => onNavigate('schedule')}><CalendarDays />
+      <button className="summary-card" onClick={() => onNavigate('schedule')}>
+        <CalendarDays />
         <span>
           <small>Next appointment</small>
           <strong>{next ? `${formatDate(next.date)}, ${formatTime(next.time)}` : 'Nothing scheduled'}</strong>
@@ -638,7 +639,7 @@ function AddCustomer({ onClose, onAdd, nextId }: { onClose: () => void; onAdd: (
   )
 }
 
-function formatDate(date: string) { return new Date(`${date}T00:00`).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) }
-function formatTime(time: string) { return new Date(`2026-01-01T${time}`).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }) }
+function formatDate(date: string) { return new Date(`${date}T00:00`).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) }
+function formatTime(time: string) { return new Date(`2026-01-01T${time}`).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' }) }
 
 export default App
