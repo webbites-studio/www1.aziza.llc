@@ -10,13 +10,43 @@ import './App.css'
 type Role = 'admin' | 'customer'
 type View = 'overview' | 'documents' | 'schedule' | 'pricing' | 'guide'
 type Currency = 'KZT' | 'USD' | 'EUR' | 'RUB'
-type DocumentItem = { id: number; name: string; category: 'Required' | 'Travel'; status: 'Missing' | 'Uploaded' | 'Approved'; fileName?: string; dataUrl?: string; uploadedAt?: string }
-type ScheduleItem = { id: number; date: string; time: string; title: string; location: string }
-type ServiceItem = { id: number; name: string; price: number }
+type DocumentItem = {
+  id: number;
+  name: string;
+  category: 'Required' | 'Travel';
+  status: 'Missing' | 'Uploaded' | 'Approved';
+  fileName?: string;
+  dataUrl?: string;
+  uploadedAt?: string
+}
+type ScheduleItem = {
+  id: number;
+  date: string;
+  time: string;
+  title: string;
+  location: string
+}
+type ServiceItem = {
+  id: number;
+  name: string;
+  price: number
+}
 type Customer = {
-  id: number; firstName: string; lastName: string; dob: string; visaType: string;
-  requestType: string; email: string; password: string; currency: Currency;
-  progress: number; documents: DocumentItem[]; schedule: ScheduleItem[]; services: ServiceItem[]
+  id: number;
+  firstName: string;
+  lastName: string;
+  dob: string;
+  visaType: string;
+
+  requestType: string;
+  email: string;
+  password: string;
+  currency: Currency;
+
+  progress: number;
+  documents: DocumentItem[];
+  schedule: ScheduleItem[];
+  services: ServiceItem[]
 }
 
 const initialCustomers: Customer[] = [
@@ -86,7 +116,7 @@ function App() {
     return saved ? JSON.parse(saved) : initialCustomers
   })
   const [session, setSession] = useState<{ role: Role; customerId?: number } | null>(null)
-  const [selectedId, setSelectedId] = useState(1)
+  const [selectedId, setSelectedId] = useState(2)
   const [view, setView] = useState<View>('overview')
   const [mobileNav, setMobileNav] = useState(false)
   const [showAddCustomer, setShowAddCustomer] = useState(false)
@@ -132,15 +162,19 @@ function App() {
         </header>
 
         <div className="content">
-          {isAdmin && view === 'overview' ? <Customers customers={customers} onOpen={(id) => { setSelectedId(id); setView('documents') }} /> : <>
-            {isAdmin && <button className="back-link" onClick={() => setView('overview')}><ArrowLeft />All customers</button>}
-            <ProfileStrip customer={customer} />
-            {view === 'overview' && <CustomerOverview customer={customer} onNavigate={setView} />}
-            {view === 'documents' && <Documents customer={customer} isAdmin={isAdmin} onChange={updateCustomer} />}
-            {view === 'schedule' && <Schedule customer={customer} isAdmin={isAdmin} onChange={updateCustomer} />}
-            {view === 'pricing' && <Pricing customer={customer} isAdmin={isAdmin} onChange={updateCustomer} />}
-            {view === 'guide' && <Guide />}
-          </>}
+          {
+            isAdmin && view === 'overview'
+              ? <Customers customers={customers} onOpen={(id) => { setSelectedId(id); setView('documents') }} />
+              : <>
+                {isAdmin && <button className="back-link" onClick={() => setView('overview')}><ArrowLeft />All customers</button>}
+                <ProfileStrip customer={customer} />
+                {view === 'overview' && <CustomerOverview customer={customer} onNavigate={setView} />}
+                {view === 'documents' && <Documents customer={customer} isAdmin={isAdmin} onChange={updateCustomer} />}
+                {view === 'schedule' && <Schedule customer={customer} isAdmin={isAdmin} onChange={updateCustomer} />}
+                {view === 'pricing' && <Pricing customer={customer} isAdmin={isAdmin} onChange={updateCustomer} />}
+                {view === 'guide' && <Guide />}
+              </>
+          }
         </div>
       </main>
       {showAddCustomer && <AddCustomer onClose={() => setShowAddCustomer(false)} onAdd={(newCustomer) => { setCustomers((current) => [...current, newCustomer]); setShowAddCustomer(false) }} nextId={Math.max(...customers.map((item) => item.id)) + 1} />}
@@ -154,7 +188,8 @@ function Login({ customers, onLogin }: { customers: Customer[]; onLogin: (sessio
   const [password, setPassword] = useState('welcome123')
   const [error, setError] = useState('')
   function switchRole(next: Role) {
-    setRole(next); setEmail(next === 'admin' ? 'admin@aziza.kz' : 'elena@example.com')
+    setRole(next);
+    setEmail(next === 'admin' ? 'admin@aziza.kz' : 'elena@example.com')
     setPassword(next === 'admin' ? 'admin123' : 'welcome123'); setError('')
   }
   function submit(event: FormEvent) {
@@ -165,12 +200,16 @@ function Login({ customers, onLogin }: { customers: Customer[]; onLogin: (sessio
     setError('Email or password is incorrect.')
   }
   return <div className="login-page">
-    <section className="login-scene"><div className="scene-brand"><span>A</span> AZIZA</div><div className="scene-copy"><p>YOUR ARRIVAL, THOUGHTFULLY PLANNED</p><h1>Settle into Astana with confidence.</h1><span>Documents, appointments and local guidance for your move to Kazakhstan.</span></div><div className="scene-credit">Astana, Kazakhstan</div></section>
-    <section className="login-panel"><div className="login-box"><div className="eyebrow">SECURE CLIENT PORTAL</div><h2>Welcome to Aziza</h2><p>Sign in to continue your relocation journey.</p>
-      <div className="role-switch"><button className={role === 'customer' ? 'active' : ''} onClick={() => switchRole('customer')}>Customer</button><button className={role === 'admin' ? 'active' : ''} onClick={() => switchRole('admin')}>Administrator</button></div>
-      <form onSubmit={submit}><label>Email address<input type="email" value={email} onChange={(event) => setEmail(event.target.value)} required /></label><label>Password<input type="password" value={password} onChange={(event) => setPassword(event.target.value)} required /></label>{error && <div className="form-error">{error}</div>}<button className="primary login-submit" type="submit">Sign in <ChevronRight /></button></form>
-      <div className="demo-note">Demo credentials are prefilled for each role.</div>
-    </div></section>
+    <section className="login-scene">
+      <div className="scene-brand"><span>A</span> AZIZA</div><div className="scene-copy"><p>YOUR ARRIVAL, THOUGHTFULLY PLANNED</p><h1>Settle into Astana with confidence.</h1><span>Documents, appointments and local guidance for your move to Kazakhstan.</span></div><div className="scene-credit">Astana, Kazakhstan</div>
+    </section>
+    <section className="login-panel">
+      <div className="login-box"><div className="eyebrow">SECURE CLIENT PORTAL</div><h2>Welcome to Aziza</h2><p>Sign in to continue your relocation journey.</p>
+        <div className="role-switch"><button className={role === 'customer' ? 'active' : ''} onClick={() => switchRole('customer')}>Customer</button><button className={role === 'admin' ? 'active' : ''} onClick={() => switchRole('admin')}>Administrator</button></div>
+        <form onSubmit={submit}><label>Email address<input type="email" value={email} onChange={(event) => setEmail(event.target.value)} required /></label><label>Password<input type="password" value={password} onChange={(event) => setPassword(event.target.value)} required /></label>{error && <div className="form-error">{error}</div>}<button className="primary login-submit" type="submit">Sign in <ChevronRight /></button></form>
+        <div className="demo-note">Demo credentials are prefilled for each role.</div>
+      </div>
+    </section>
   </div>
 }
 
@@ -188,7 +227,46 @@ function Customers({ customers, onOpen }: { customers: Customer[]; onOpen: (id: 
 }
 
 function ProfileStrip({ customer }: { customer: Customer }) {
-  return <div className="profile-strip"><div className="profile-person"><div className="avatar large">{customer.firstName[0]}{customer.lastName[0]}</div><div><h2>{customer.firstName} {customer.lastName}</h2><p>{customer.email}</p></div></div><dl><div><dt>Date of birth</dt><dd>{new Date(`${customer.dob}T00:00`).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</dd></div><div><dt>Visa type</dt><dd>{customer.visaType}</dd></div><div><dt>Request</dt><dd>{customer.requestType}</dd></div><div><dt>Overall progress</dt><dd>{customer.progress}%</dd></div></dl></div>
+  return (
+    <div className="profile-strip">
+      <div className="profile-person">
+        <div className="avatar large">{customer.firstName[0]}{customer.lastName[0]}
+        </div>
+        <div>
+          <h2>{customer.firstName} {customer.lastName}
+          </h2>
+          <p>{customer.email}
+          </p>
+        </div>
+      </div>
+      <dl>
+        <div>
+          <dt>Date of birth
+          </dt>
+          <dd>{new Date(`${customer.dob}T00:00`).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+          </dd>
+        </div>
+        <div>
+          <dt>Visa type
+          </dt>
+          <dd>{customer.visaType}
+          </dd>
+        </div>
+        <div>
+          <dt>Request
+          </dt>
+          <dd>{customer.requestType}
+          </dd>
+        </div>
+        <div>
+          <dt>Overall progress
+          </dt>
+          <dd>{customer.progress}%
+          </dd>
+        </div>
+      </dl>
+    </div>
+  )
 }
 
 function CustomerOverview({ customer, onNavigate }: { customer: Customer; onNavigate: (view: View) => void }) {
@@ -303,24 +381,233 @@ function Schedule({ customer, isAdmin, onChange }: { customer: Customer; isAdmin
   const [draft, setDraft] = useState({ date: '2026-08-12', time: '12:00', title: '', location: '' })
   const grouped = customer.schedule.reduce<Record<string, ScheduleItem[]>>((groups, item) => ({ ...groups, [item.date]: [...(groups[item.date] ?? []), item] }), {})
   function add(event: FormEvent) { event.preventDefault(); if (!draft.title) return; onChange({ ...customer, schedule: [...customer.schedule, { id: Date.now(), ...draft }] }); setDraft({ ...draft, title: '', location: '' }) }
-  return <div className="two-column"><section className="panel"><div className="panel-head"><div><h2>Journey schedule</h2><p>Your appointments and plans, day by day.</p></div></div><div className="timeline">{Object.entries(grouped).sort(([a], [b]) => a.localeCompare(b)).map(([date, items]) => <div className="timeline-day" key={date}><div className="date-block"><strong>{new Date(`${date}T00:00`).toLocaleDateString('en-US', { day: '2-digit' })}</strong><span>{new Date(`${date}T00:00`).toLocaleDateString('en-US', { month: 'short' })}</span></div><div>{items.sort((a, b) => a.time.localeCompare(b.time)).map((item) => <div className="timeline-item" key={item.id}><time>{formatTime(item.time)}</time><span></span><div><strong>{item.title}</strong><small>{item.location}</small></div></div>)}</div></div>)}</div></section>{isAdmin && <section className="panel form-panel"><h2>Add to schedule</h2><p>New items appear in the customer portal instantly.</p><form onSubmit={add}><label>Date<input type="date" value={draft.date} onChange={(event) => setDraft({ ...draft, date: event.target.value })} required /></label><label>Time<input type="time" value={draft.time} onChange={(event) => setDraft({ ...draft, time: event.target.value })} required /></label><label>Appointment<input value={draft.title} onChange={(event) => setDraft({ ...draft, title: event.target.value })} placeholder="e.g. Bank appointment" required /></label><label>Location<input value={draft.location} onChange={(event) => setDraft({ ...draft, location: event.target.value })} placeholder="Address or meeting place" /></label><button className="primary" type="submit"><Plus />Add appointment</button></form></section>}</div>
+  return (
+    <div className="two-column">
+      <section className="panel">
+        <div className="panel-head">
+          <div>
+            <h2>Journey schedule
+            </h2>
+            <p>Your appointments and plans, day by day.
+            </p>
+          </div>
+        </div>
+        <div className="timeline">{Object.entries(grouped).sort(([a], [b]) => a.localeCompare(b)).map(([date, items]) =>
+          <div className="timeline-day" key={date}>
+            <div className="date-block">
+              <strong>{new Date(`${date}T00:00`).toLocaleDateString('en-US', { day: '2-digit' })}
+              </strong>
+              <span>{new Date(`${date}T00:00`).toLocaleDateString('en-US', { month: 'short' })}
+              </span>
+            </div>
+            <div>{items.sort((a, b) => a.time.localeCompare(b.time)).map((item) =>
+              <div className="timeline-item" key={item.id}>
+                <time>{formatTime(item.time)}
+                </time>
+                <span>
+                </span>
+                <div>
+                  <strong>{item.title}
+                  </strong>
+                  <small>{item.location}
+                  </small>
+                </div>
+              </div>)}
+            </div>
+          </div>)}
+        </div>
+      </section>{isAdmin &&
+        <section className="panel form-panel">
+          <h2>Add to schedule
+          </h2>
+          <p>New items appear in the customer portal instantly.
+          </p>
+          <form onSubmit={add}>
+            <label>Date
+              <input type="date" value={draft.date} onChange={(event) => setDraft({ ...draft, date: event.target.value })} required />
+            </label>
+            <label>Time
+              <input type="time" value={draft.time} onChange={(event) => setDraft({ ...draft, time: event.target.value })} required />
+            </label>
+            <label>Appointment
+              <input value={draft.title} onChange={(event) => setDraft({ ...draft, title: event.target.value })} placeholder="e.g. Bank appointment" required />
+            </label>
+            <label>Location
+              <input value={draft.location} onChange={(event) => setDraft({ ...draft, location: event.target.value })} placeholder="Address or meeting place" />
+            </label>
+            <button className="primary" type="submit">
+              <Plus />Add appointment
+            </button>
+          </form>
+        </section>}
+    </div>)
 }
 
 function Pricing({ customer, isAdmin, onChange }: { customer: Customer; isAdmin: boolean; onChange: (customer: Customer) => void }) {
   const [service, setService] = useState(serviceOptions[0]); const [price, setPrice] = useState('')
   const total = customer.services.reduce((sum, item) => sum + item.price, 0)
-  function add(event: FormEvent) { event.preventDefault(); if (!price || Number(price) <= 0) return; onChange({ ...customer, services: [...customer.services, { id: Date.now(), name: service, price: Number(price) }] }); setPrice('') }
-  return <div className="two-column pricing-layout"><section className="panel"><div className="panel-head"><div><h2>Services & pricing</h2><p>Base pricing is in Kazakhstan tenge (KZT).</p></div><select value={customer.currency} onChange={(event) => onChange({ ...customer, currency: event.target.value as Currency })}><option value="KZT">KZT ₸</option><option value="USD">USD $</option><option value="EUR">EUR €</option><option value="RUB">RUB ₽</option></select></div><div className="price-list">{customer.services.map((item) => <div key={item.id}><span>{item.name}</span><strong>₸{item.price.toLocaleString()}</strong><small>{customer.currency !== 'KZT' ? `≈ ${currencySymbols[customer.currency]}${(item.price * rates[customer.currency]).toLocaleString(undefined, { maximumFractionDigits: 0 })}` : ''}</small></div>)}</div><div className="price-total"><span>Total estimate<small>Converted at indicative rate</small></span><strong>₸{total.toLocaleString()}<small>{customer.currency !== 'KZT' ? `≈ ${currencySymbols[customer.currency]}${(total * rates[customer.currency]).toLocaleString(undefined, { maximumFractionDigits: 0 })}` : ''}</small></strong></div></section>{isAdmin ? <section className="panel form-panel"><h2>Add service line</h2><p>Choose a standard item or type its price.</p><form onSubmit={add}><label>Service<select value={service} onChange={(event) => setService(event.target.value)}>{serviceOptions.map((item) => <option key={item}>{item}</option>)}</select></label><label>Price in KZT<input type="number" min="1" value={price} onChange={(event) => setPrice(event.target.value)} placeholder="0" /></label><button className="primary" type="submit"><Plus />Add to estimate</button></form></section> : <section className="quote-note"><CircleDollarSign /><h3>Clear, local pricing</h3><p>Your coordinator updates this estimate as services are confirmed. Currency values are indicative.</p></section>}</div>
+  function add(event: FormEvent) {
+    event.preventDefault(); if (!price || Number(price) <= 0) return; onChange({ ...customer, services: [...customer.services, { id: Date.now(), name: service, price: Number(price) }] }); setPrice('')
+  }
+  return (
+    <div className="two-column pricing-layout">
+      <section className="panel">
+        <div className="panel-head">
+          <div>
+            <h2>Services & pricing
+            </h2>
+            <p>Base pricing is in Kazakhstan tenge (KZT).
+            </p>
+          </div>
+          <select value={customer.currency} onChange={(event) => onChange({ ...customer, currency: event.target.value as Currency })}>
+            <option value="KZT">KZT ₸
+            </option>
+            <option value="USD">USD $
+            </option>
+            <option value="EUR">EUR €
+            </option>
+            <option value="RUB">RUB ₽
+            </option>
+          </select>
+        </div>
+        <div className="price-list">{customer.services.map((item) =>
+          <div key={item.id}>
+            <span>{item.name}
+            </span>
+            <strong>₸{item.price.toLocaleString()}
+            </strong>
+            <small>{customer.currency !== 'KZT' ? `≈ ${currencySymbols[customer.currency]}${(item.price * rates[customer.currency]).toLocaleString(undefined, { maximumFractionDigits: 0 })}` : ''}
+            </small>
+          </div>)}
+        </div>
+        <div className="price-total">
+          <span>Total estimate
+            <small>Converted at indicative rate
+            </small>
+          </span>
+          <strong>₸{total.toLocaleString()}
+            <small>{customer.currency !== 'KZT' ? `≈ ${currencySymbols[customer.currency]}${(total * rates[customer.currency]).toLocaleString(undefined, { maximumFractionDigits: 0 })}` : ''}
+            </small>
+          </strong>
+        </div>
+      </section>{isAdmin ?
+        <section className="panel form-panel">
+          <h2>Add service line
+          </h2>
+          <p>Choose a standard item or type its price.
+          </p>
+          <form onSubmit={add}>
+            <label>Service
+              <select value={service} onChange={(event) => setService(event.target.value)}>{serviceOptions.map((item) =>
+                <option key={item}>{item}
+                </option>)}
+              </select>
+            </label>
+            <label>Price in KZT
+              <input type="number" min="1" value={price} onChange={(event) => setPrice(event.target.value)} placeholder="0" />
+            </label>
+            <button className="primary" type="submit">
+              <Plus />Add to estimate
+            </button>
+          </form>
+        </section> :
+        <section className="quote-note">
+          <CircleDollarSign />
+          <h3>Clear, local pricing
+          </h3>
+          <p>Your coordinator updates this estimate as services are confirmed. Currency values are indicative.
+          </p>
+        </section>}
+    </div>)
 }
 
 function Guide() {
-  return <section><div className="section-intro"><div><span className="eyebrow">CURATED FOR YOUR STAY</span><h2>Make yourself at home in Astana</h2><p>Places selected by your local Aziza coordinator.</p></div></div><div className="guide-grid">{guideItems.map((item) => <article key={item.name}><img src={item.image} alt={item.name} /><div><span>{item.type}</span><h3>{item.name}</h3><p>{item.note}</p><button aria-label={`View ${item.name}`}><Eye />View details</button></div></article>)}</div></section>
+  return (
+    <section>
+      <div className="section-intro">
+        <div>
+          <span className="eyebrow">CURATED FOR YOUR STAY
+          </span>
+          <h2>Make yourself at home in Astana
+          </h2>
+          <p>Places selected by your local Aziza coordinator.
+          </p>
+        </div>
+      </div>
+      <div className="guide-grid">{guideItems.map((item) =>
+        <article key={item.name}>
+          <img src={item.image} alt={item.name} />
+          <div>
+            <span>{item.type}
+            </span>
+            <h3>{item.name}
+            </h3>
+            <p>{item.note}
+            </p>
+            <button aria-label={`View ${item.name}`}>
+              <Eye />View details
+            </button>
+          </div>
+        </article>)}
+      </div>
+    </section>)
 }
 
 function AddCustomer({ onClose, onAdd, nextId }: { onClose: () => void; onAdd: (customer: Customer) => void; nextId: number }) {
   const [draft, setDraft] = useState({ firstName: '', lastName: '', dob: '', visaType: 'Digital Nomad Visa', requestType: 'Relocation assistance', email: '', password: 'welcome123', currency: 'KZT' as Currency })
   function submit(event: FormEvent) { event.preventDefault(); onAdd({ ...draft, id: nextId, progress: 10, documents: [{ id: 1, name: 'Passport scan', category: 'Required', status: 'Missing' }, { id: 2, name: 'Flight ticket', category: 'Travel', status: 'Missing' }, { id: 3, name: 'Hotel booking', category: 'Travel', status: 'Missing' }], schedule: [], services: [] }) }
-  return <div className="modal-backdrop"><section className="modal"><div className="modal-head"><div><span className="eyebrow">NEW CUSTOMER</span><h2>Create portal access</h2></div><button className="icon-button" onClick={onClose}><X /></button></div><form onSubmit={submit}><div className="form-grid"><label>First name<input value={draft.firstName} onChange={(event) => setDraft({ ...draft, firstName: event.target.value })} required /></label><label>Last name<input value={draft.lastName} onChange={(event) => setDraft({ ...draft, lastName: event.target.value })} required /></label><label>Date of birth<input type="date" value={draft.dob} onChange={(event) => setDraft({ ...draft, dob: event.target.value })} required /></label><label>Visa type<select value={draft.visaType} onChange={(event) => setDraft({ ...draft, visaType: event.target.value })}><option>Digital Nomad Visa</option><option>Work Visa</option><option>Residence Permit</option><option>Tourist Visa</option></select></label><label>Request type<input value={draft.requestType} onChange={(event) => setDraft({ ...draft, requestType: event.target.value })} required /></label><label>Preferred currency<select value={draft.currency} onChange={(event) => setDraft({ ...draft, currency: event.target.value as Currency })}><option>KZT</option><option>USD</option><option>EUR</option><option>RUB</option></select></label><label>Email / login<input type="email" value={draft.email} onChange={(event) => setDraft({ ...draft, email: event.target.value })} required /></label><label>Temporary password<input value={draft.password} onChange={(event) => setDraft({ ...draft, password: event.target.value })} required /></label></div><div className="modal-actions"><button type="button" className="secondary" onClick={onClose}>Cancel</button><button className="primary" type="submit">Create customer</button></div></form></section></div>
+  return (
+    <div className="modal-backdrop">
+      <section className="modal">
+        <div className="modal-head">
+          <div>
+            <span className="eyebrow">NEW CUSTOMER
+            </span>
+            <h2>Create portal access
+            </h2>
+          </div>
+          <button className="icon-button" onClick={onClose}>
+            <X />
+          </button>
+        </div>
+        <form onSubmit={submit}>
+          <div className="form-grid">
+            <label>First name
+              <input value={draft.firstName} onChange={(event) => setDraft({ ...draft, firstName: event.target.value })} required />
+            </label>
+            <label>Last name
+              <input value={draft.lastName} onChange={(event) => setDraft({ ...draft, lastName: event.target.value })} required />
+            </label>
+            <label>Date of birth
+              <input type="date" value={draft.dob} onChange={(event) => setDraft({ ...draft, dob: event.target.value })} required />
+            </label>
+            <label>Visa type
+              <select value={draft.visaType} onChange={(event) => setDraft({ ...draft, visaType: event.target.value })}>
+                <option>Digital Nomad Visa</option>
+                <option>Work Visa</option>
+                <option>Residence Permit</option>
+                <option>Tourist Visa</option>
+              </select>
+            </label>
+            <label>Request type<input value={draft.requestType} onChange={(event) => setDraft({ ...draft, requestType: event.target.value })} required /></label>
+            <label>Preferred currency<select value={draft.currency} onChange={(event) => setDraft({ ...draft, currency: event.target.value as Currency })}>
+              <option>KZT</option>
+              <option>USD</option>
+              <option>EUR</option>
+              <option>RUB</option>
+            </select>
+            </label>
+            <label>Email / login<input type="email" value={draft.email} onChange={(event) => setDraft({ ...draft, email: event.target.value })} required /></label>
+            <label>Temporary password<input value={draft.password} onChange={(event) => setDraft({ ...draft, password: event.target.value })} required /></label>
+          </div>
+          <div className="modal-actions">
+            <button type="button" className="secondary" onClick={onClose}>Cancel</button>
+            <button className="primary" type="submit">Create customer</button>
+          </div>
+        </form>
+      </section>
+    </div>
+  )
 }
 
 function formatDate(date: string) { return new Date(`${date}T00:00`).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) }
