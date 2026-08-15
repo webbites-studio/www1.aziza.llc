@@ -204,7 +204,8 @@ function Login({ customers, onLogin }: { customers: Customer[]; onLogin: (sessio
       <div className="scene-brand"><span>A</span> AZIZA</div><div className="scene-copy"><p>YOUR ARRIVAL, THOUGHTFULLY PLANNED</p><h1>Settle into Astana with confidence.</h1><span>Documents, appointments and local guidance for your move to Kazakhstan.</span></div><div className="scene-credit">Astana, Kazakhstan</div>
     </section>
     <section className="login-panel">
-      <div className="login-box"><div className="eyebrow">SECURE CLIENT PORTAL</div><h2>Welcome to Aziza</h2><p>Sign in to continue your relocation journey.</p>
+      <div className="login-box">
+        <div className="eyebrow">SECURE CLIENT PORTAL</div><h2>Welcome to Astana</h2><p>Sign in to continue your relocation journey.</p>
         <div className="role-switch">
           <button className={role === 'customer' ? 'active' : ''} onClick={() => switchRole('customer')}>Customer</button>
           <button className={role === 'admin' ? 'active' : ''} onClick={() => switchRole('admin')}>Administrator</button>
@@ -224,14 +225,33 @@ function Login({ customers, onLogin }: { customers: Customer[]; onLogin: (sessio
 function Customers({ customers, onOpen }: { customers: Customer[]; onOpen: (id: number) => void }) {
   const [query, setQuery] = useState('')
   const filtered = customers.filter((item) => `${item.firstName} ${item.lastName} ${item.email}`.toLowerCase().includes(query.toLowerCase()))
-  return <section className="panel customer-panel"><div className="panel-head"><div><h2>All customers</h2><p>{customers.length} active customer records</p></div><label className="search"><Search /><input placeholder="Search customers" value={query} onChange={(event) => setQuery(event.target.value)} /></label></div><div className="customer-table">
-    <div className="table-row table-heading"><span>Customer</span><span>Visa & request</span><span>Documents</span><span>Progress</span><span></span></div>
-    {filtered.map((item) => {
-      const uploaded = item.documents.filter((document) => document.status !== 'Missing').length; return <button className="table-row" key={item.id} onClick={() => onOpen(item.id)}>
-        <span className="customer-cell"><b className="avatar">{item.firstName[0]}{item.lastName[0]}</b><span><strong>{item.firstName} {item.lastName}</strong><small>{item.email}</small></span></span><span><strong>{item.visaType}</strong><small>{item.requestType}</small></span><span><strong>{uploaded} / {item.documents.length}</strong><small>received</small></span><span className="progress-cell"><span><i style={{ width: `${item.progress}%` }} /></span><small>{item.progress}%</small></span><span><ChevronRight /></span>
-      </button>
-    })}
-  </div></section>
+  console.log('customers', customers.length, 'query', query, 'filtered', filtered.length)
+  return (
+    <section className="panel customer-panel">
+      <div className="panel-head">
+        <div><h2>All customers</h2><p>{customers.length} active customer records</p></div>
+        <label className="search"><Search /><input placeholder="Search customers" value={query} onChange={(event) => setQuery(event.target.value)} /></label>
+      </div>
+      <div className="customer-table">
+        <div className="table-row table-heading"><span>Customer</span><span>Visa & request</span><span>Documents</span><span>Progress</span><span></span></div>
+        {filtered.map((item) => {
+          const uploaded = item.documents.filter((document) => document.status !== 'Missing').length;
+          return (
+            <button className="table-row" key={item.id} onClick={() => onOpen(item.id)}>
+              <span className="customer-cell">
+                <b className="avatar">{item.firstName[0]}{item.lastName[0]}</b>
+                <span><strong>{item.firstName} {item.lastName}</strong><small>{item.email}</small></span>
+              </span>
+              <span><strong>{item.visaType}</strong><small>{item.requestType}</small></span>
+              <span><strong>{uploaded} / {item.documents.length}</strong><small>received</small></span>
+              <span className="progress-cell"><span><i style={{ width: `${item.progress}%` }} /></span><small>{item.progress}%</small></span>
+              <span><ChevronRight /></span>
+            </button>
+          )
+        })}
+      </div>
+    </section>
+  )
 }
 
 function ProfileStrip({ customer }: { customer: Customer }) {
