@@ -205,8 +205,16 @@ function Login({ customers, onLogin }: { customers: Customer[]; onLogin: (sessio
     </section>
     <section className="login-panel">
       <div className="login-box"><div className="eyebrow">SECURE CLIENT PORTAL</div><h2>Welcome to Aziza</h2><p>Sign in to continue your relocation journey.</p>
-        <div className="role-switch"><button className={role === 'customer' ? 'active' : ''} onClick={() => switchRole('customer')}>Customer</button><button className={role === 'admin' ? 'active' : ''} onClick={() => switchRole('admin')}>Administrator</button></div>
-        <form onSubmit={submit}><label>Email address<input type="email" value={email} onChange={(event) => setEmail(event.target.value)} required /></label><label>Password<input type="password" value={password} onChange={(event) => setPassword(event.target.value)} required /></label>{error && <div className="form-error">{error}</div>}<button className="primary login-submit" type="submit">Sign in <ChevronRight /></button></form>
+        <div className="role-switch">
+          <button className={role === 'customer' ? 'active' : ''} onClick={() => switchRole('customer')}>Customer</button>
+          <button className={role === 'admin' ? 'active' : ''} onClick={() => switchRole('admin')}>Administrator</button>
+        </div>
+        <form onSubmit={submit}>
+          <label>Email address<input type="email" value={email} onChange={(event) => setEmail(event.target.value)} required /></label>
+          <label>Password<input type="password" value={password} onChange={(event) => setPassword(event.target.value)} required /></label>
+          {error && <div className="form-error">{error}</div>}
+          <button className="primary login-submit" type="submit">Sign in <ChevronRight /></button>
+        </form>
         <div className="demo-note">Demo credentials are prefilled for each role.</div>
       </div>
     </section>
