@@ -589,14 +589,10 @@ function AddCustomer({ onClose, onAdd, nextId }: { onClose: () => void; onAdd: (
       <section className="modal">
         <div className="modal-head">
           <div>
-            <span className="eyebrow">NEW CUSTOMER
-            </span>
-            <h2>Create portal access
-            </h2>
+            <span className="eyebrow">NEW CUSTOMER</span>
+            <h2>Create portal access</h2>
           </div>
-          <button className="icon-button" onClick={onClose}>
-            <X />
-          </button>
+          <button className="icon-button" onClick={onClose}><X /></button>
         </div>
         <form onSubmit={submit}>
           <div className="form-grid">
