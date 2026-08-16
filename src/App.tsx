@@ -578,7 +578,12 @@ function Guide() {
 
 function AddCustomer({ onClose, onAdd, nextId }: { onClose: () => void; onAdd: (customer: Customer) => void; nextId: number }) {
   const [draft, setDraft] = useState({ firstName: '', lastName: '', dob: '', visaType: 'Digital Nomad Visa', requestType: 'Relocation assistance', email: '', password: 'welcome123', currency: 'KZT' as Currency })
-  function submit(event: FormEvent) { event.preventDefault(); onAdd({ ...draft, id: nextId, progress: 10, documents: [{ id: 1, name: 'Passport scan', category: 'Required', status: 'Missing' }, { id: 2, name: 'Flight ticket', category: 'Travel', status: 'Missing' }, { id: 3, name: 'Hotel booking', category: 'Travel', status: 'Missing' }], schedule: [], services: [] }) }
+
+  function submit(event: FormEvent) {
+    event.preventDefault();
+    onAdd({ ...draft, id: nextId, progress: 10, documents: [{ id: 1, name: 'Passport scan', category: 'Required', status: 'Missing' }, { id: 2, name: 'Flight ticket', category: 'Travel', status: 'Missing' }, { id: 3, name: 'Hotel booking', category: 'Travel', status: 'Missing' }], schedule: [], services: [] })
+  }
+
   return (
     <div className="modal-backdrop">
       <section className="modal">
