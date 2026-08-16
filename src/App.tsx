@@ -124,7 +124,7 @@ function App() {
   useEffect(() => localStorage.setItem('aziza-customers', JSON.stringify(customers)), [customers])
   const activeId = session?.role === 'customer' ? session.customerId! : selectedId
   const customer = customers.find((item) => item.id === activeId) ?? customers[0]
-  const updateCustomer = (modified: Customer) => setCustomers((current) => current.map((item) => item.id === modified.id ? modified : item))
+  const updateCustomer = (modifiedCustomer: Customer) => setCustomers((existingCustomers) => existingCustomers.map((item) => item.id === modifiedCustomer.id ? modifiedCustomer : item))
 
   if (!session) return <Login customers={customers} onLogin={setSession} />
   const isAdmin = session.role === 'admin'
@@ -425,41 +425,39 @@ function Documents({ customer, isAdmin, onChange }: { customer: Customer; isAdmi
 function Schedule({ customer, isAdmin, onChange }: { customer: Customer; isAdmin: boolean; onChange: (customer: Customer) => void }) {
   const [draft, setDraft] = useState({ date: '2026-08-12', time: '12:00', title: '', location: '' })
   const grouped = customer.schedule.reduce<Record<string, ScheduleItem[]>>((groups, item) => ({ ...groups, [item.date]: [...(groups[item.date] ?? []), item] }), {})
-  function add(event: FormEvent) { event.preventDefault(); if (!draft.title) return; onChange({ ...customer, schedule: [...customer.schedule, { id: Date.now(), ...draft }] }); setDraft({ ...draft, title: '', location: '' }) }
+
+  function add(event: FormEvent) {
+    event.preventDefault();
+    if (!draft.title) return;
+    onChange({ ...customer, schedule: [...customer.schedule, { id: Date.now(), ...draft }] });
+    setDraft({ ...draft, title: '', location: '' })
+  }
+
   return (
     <div className="two-column">
       <section className="panel">
         <div className="panel-head">
-          <div>
-            <h2>Journey schedule
-            </h2>
-            <p>Your appointments and plans, day by day.
-            </p>
-          </div>
+          <div><h2>Journey schedule</h2><p>Your appointments and plans, day by day.</p></div>
         </div>
-        <div className="timeline">{Object.entries(grouped).sort(([a], [b]) => a.localeCompare(b)).map(([date, items]) =>
-          <div className="timeline-day" key={date}>
-            <div className="date-block">
-              <strong>{new Date(`${date}T00:00`).toLocaleDateString('en-US', { day: '2-digit' })}
-              </strong>
-              <span>{new Date(`${date}T00:00`).toLocaleDateString('en-US', { month: 'short' })}
-              </span>
-            </div>
-            <div>{items.sort((a, b) => a.time.localeCompare(b.time)).map((item) =>
-              <div className="timeline-item" key={item.id}>
-                <time>{formatTime(item.time)}
-                </time>
-                <span>
-                </span>
-                <div>
-                  <strong>{item.title}
-                  </strong>
-                  <small>{item.location}
-                  </small>
-                </div>
-              </div>)}
-            </div>
-          </div>)}
+        <div className="timeline">
+          {Object.entries(grouped).sort(([a], [b]) => a.localeCompare(b)).map(([date, items]) =>
+            <div className="timeline-day" key={date}>
+              <div className="date-block">
+                <strong>{new Date(`${date}T00:00`).toLocaleDateString('en-US', { day: '2-digit' })}</strong>
+                <span>{new Date(`${date}T00:00`).toLocaleDateString('en-US', { month: 'short' })}</span>
+              </div>
+              <div>
+                {items.sort((a, b) => a.time.localeCompare(b.time)).map((item) =>
+                  <div className="timeline-item" key={item.id}>
+                    <time>{formatTime(item.time)}</time><span></span>
+                    <div>
+                      <strong>{item.title}</strong><small>{item.location}</small>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>)
+          }
         </div>
       </section>{isAdmin &&
         <section className="panel form-panel">
