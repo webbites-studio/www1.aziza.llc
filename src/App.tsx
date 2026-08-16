@@ -334,10 +334,10 @@ function CustomerOverview({ customer, onNavigate }: { customer: Customer; onNavi
           </div>
         </div>
         <div className="path-steps">
-          <span className="done">
-            <Check />Profile created</span>
-          <span className="done">
-            <Check />Plan confirmed</span>
+          <span className="done"><Check /></span>
+          <b>Profile created</b>
+          <span className="done"><Check /></span>
+          <b>Plan confirmed</b>
           <span className="current">3</span>
           <b>Documents & appointments</b>
           <span>4</span>
