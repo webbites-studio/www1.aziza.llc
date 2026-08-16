@@ -459,7 +459,8 @@ function Schedule({ customer, isAdmin, onChange }: { customer: Customer; isAdmin
             </div>)
           }
         </div>
-      </section>{isAdmin &&
+      </section>
+      {isAdmin &&
         <section className="panel form-panel">
           <h2>Add to schedule
           </h2>
@@ -478,90 +479,71 @@ function Schedule({ customer, isAdmin, onChange }: { customer: Customer; isAdmin
             <label>Location
               <input value={draft.location} onChange={(event) => setDraft({ ...draft, location: event.target.value })} placeholder="Address or meeting place" />
             </label>
-            <button className="primary" type="submit">
-              <Plus />Add appointment
-            </button>
+            <button className="primary" type="submit"><Plus />Add appointment</button>
           </form>
-        </section>}
+        </section>
+      }
     </div>)
 }
 
 function Pricing({ customer, isAdmin, onChange }: { customer: Customer; isAdmin: boolean; onChange: (customer: Customer) => void }) {
-  const [service, setService] = useState(serviceOptions[0]); const [price, setPrice] = useState('')
-  const total = customer.services.reduce((sum, item) => sum + item.price, 0)
+  const [service, setService] = useState(serviceOptions[0]);
+  const [price, setPrice] = useState('');
+  const total = customer.services.reduce((sum, item) => sum + item.price, 0);
+
   function add(event: FormEvent) {
-    event.preventDefault(); if (!price || Number(price) <= 0) return; onChange({ ...customer, services: [...customer.services, { id: Date.now(), name: service, price: Number(price) }] }); setPrice('')
+    event.preventDefault();
+    if (!price || Number(price) <= 0) return;
+    onChange({ ...customer, services: [...customer.services, { id: Date.now(), name: service, price: Number(price) }] });
+    setPrice('')
   }
+
   return (
     <div className="two-column pricing-layout">
       <section className="panel">
         <div className="panel-head">
-          <div>
-            <h2>Services & pricing
-            </h2>
-            <p>Base pricing is in Kazakhstan tenge (KZT).
-            </p>
-          </div>
+          <div><h2>Services & pricing</h2><p>Base pricing is in Kazakhstan tenge (KZT).</p></div>
           <select value={customer.currency} onChange={(event) => onChange({ ...customer, currency: event.target.value as Currency })}>
-            <option value="KZT">KZT ₸
-            </option>
-            <option value="USD">USD $
-            </option>
-            <option value="EUR">EUR €
-            </option>
-            <option value="RUB">RUB ₽
-            </option>
+            <option value="KZT">KZT ₸</option>
+            <option value="USD">USD $</option>
+            <option value="EUR">EUR €</option>
+            <option value="RUB">RUB ₽</option>
           </select>
         </div>
         <div className="price-list">{customer.services.map((item) =>
           <div key={item.id}>
-            <span>{item.name}
-            </span>
-            <strong>₸{item.price.toLocaleString()}
-            </strong>
-            <small>{customer.currency !== 'KZT' ? `≈ ${currencySymbols[customer.currency]}${(item.price * rates[customer.currency]).toLocaleString(undefined, { maximumFractionDigits: 0 })}` : ''}
-            </small>
+            <span>{item.name}</span>
+            <strong>₸{item.price.toLocaleString()}</strong>
+            <small>{customer.currency !== 'KZT' ? `≈ ${currencySymbols[customer.currency]}${(item.price * rates[customer.currency]).toLocaleString(undefined, { maximumFractionDigits: 0 })}` : ''}</small>
           </div>)}
         </div>
         <div className="price-total">
-          <span>Total estimate
-            <small>Converted at indicative rate
-            </small>
-          </span>
+          <span>Total estimate<small>Converted at indicative rate</small></span>
           <strong>₸{total.toLocaleString()}
             <small>{customer.currency !== 'KZT' ? `≈ ${currencySymbols[customer.currency]}${(total * rates[customer.currency]).toLocaleString(undefined, { maximumFractionDigits: 0 })}` : ''}
             </small>
           </strong>
         </div>
       </section>
-      {isAdmin ?
-        <section className="panel form-panel">
-          <h2>Add service line
-          </h2>
-          <p>Choose a standard item or type its price.
-          </p>
-          <form onSubmit={add}>
-            <label>Service
-              <select value={service} onChange={(event) => setService(event.target.value)}>{serviceOptions.map((item) =>
-                <option key={item}>{item}
-                </option>)}
-              </select>
-            </label>
-            <label>Price in KZT
-              <input type="number" min="1" value={price} onChange={(event) => setPrice(event.target.value)} placeholder="0" />
-            </label>
-            <button className="primary" type="submit">
-              <Plus />Add to estimate
-            </button>
-          </form>
-        </section> :
-        <section className="quote-note">
-          <CircleDollarSign />
-          <h3>Clear, local pricing
-          </h3>
-          <p>Your coordinator updates this estimate as services are confirmed. Currency values are indicative.
-          </p>
-        </section>
+      {
+        isAdmin
+          ? <section className="panel form-panel">
+            <h2>Add service line</h2><p>Choose a standard item or type its price.</p>
+            <form onSubmit={add}>
+              <label>Service
+                <select value={service} onChange={(event) => setService(event.target.value)}>
+                  {serviceOptions.map((item) => <option key={item}>{item}</option>)}
+                </select>
+              </label>
+              <label>Price in KZT
+                <input type="number" min="1" step="1000" value={price} onChange={(event) => setPrice(event.target.value)} placeholder="0" required />
+              </label>
+              <button className="primary" type="submit"><Plus />Add to estimate</button>
+            </form>
+          </section>
+          : <section className="quote-note">
+            <CircleDollarSign /><h3>Clear, local pricing</h3><p>Your coordinator updates this estimate as services are confirmed. Currency values are indicative.</p>
+          </section>
       }
     </div>
   )
