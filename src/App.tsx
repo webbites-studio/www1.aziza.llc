@@ -533,7 +533,8 @@ function Pricing({ customer, isAdmin, onChange }: { customer: Customer; isAdmin:
             </small>
           </strong>
         </div>
-      </section>{isAdmin ?
+      </section>
+      {isAdmin ?
         <section className="panel form-panel">
           <h2>Add service line
           </h2>
@@ -560,8 +561,10 @@ function Pricing({ customer, isAdmin, onChange }: { customer: Customer; isAdmin:
           </h3>
           <p>Your coordinator updates this estimate as services are confirmed. Currency values are indicative.
           </p>
-        </section>}
-    </div>)
+        </section>
+      }
+    </div>
+  )
 }
 
 function Guide() {
@@ -569,31 +572,26 @@ function Guide() {
     <section>
       <div className="section-intro">
         <div>
-          <span className="eyebrow">CURATED FOR YOUR STAY
-          </span>
-          <h2>Make yourself at home in Astana
-          </h2>
-          <p>Places selected by your local Aziza coordinator.
-          </p>
+          <span className="eyebrow">CURATED FOR YOUR STAY</span>
+          <h2>Make yourself at home in Astana</h2>
+          <p>Places selected by your local Aziza coordinator.</p>
         </div>
       </div>
-      <div className="guide-grid">{guideItems.map((item) =>
-        <article key={item.name}>
-          <img src={item.image} alt={item.name} />
-          <div>
-            <span>{item.type}
-            </span>
-            <h3>{item.name}
-            </h3>
-            <p>{item.note}
-            </p>
-            <button aria-label={`View ${item.name}`}>
-              <Eye />View details
-            </button>
-          </div>
-        </article>)}
+      <div className="guide-grid">
+        {guideItems.map((item) =>
+          <article key={item.name}>
+            <img src={item.image} alt={item.name} />
+            <div>
+              <span>{item.type}</span>
+              <h3>{item.name}</h3>
+              <p>{item.note}</p>
+              <button aria-label={`View ${item.name}`}><Eye />View details</button>
+            </div>
+          </article>
+        )}
       </div>
-    </section>)
+    </section>
+  )
 }
 
 function AddCustomer({ onClose, onAdd, nextId }: { onClose: () => void; onAdd: (customer: Customer) => void; nextId: number }) {
