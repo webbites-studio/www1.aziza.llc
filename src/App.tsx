@@ -124,7 +124,7 @@ function App() {
   useEffect(() => localStorage.setItem('aziza-customers', JSON.stringify(customers)), [customers])
   const activeId = session?.role === 'customer' ? session.customerId! : selectedId
   const customer = customers.find((item) => item.id === activeId) ?? customers[0]
-  const updateCustomer = (next: Customer) => setCustomers((current) => current.map((item) => item.id === next.id ? next : item))
+  const updateCustomer = (modified: Customer) => setCustomers((current) => current.map((item) => item.id === modified.id ? modified : item))
 
   if (!session) return <Login customers={customers} onLogin={setSession} />
   const isAdmin = session.role === 'admin'
@@ -354,12 +354,25 @@ function Documents({ customer, isAdmin, onChange }: { customer: Customer; isAdmi
     const file = event.target.files?.[0]; if (!file) return
     if (!['application/pdf', 'image/jpeg'].includes(file.type)) return alert('Please choose a PDF, JPEG or JPG file.')
     const reader = new FileReader()
-    reader.onload = () => onChange({ ...customer, documents: customer.documents.map((item) => item.id === documentId ? { ...item, status: 'Uploaded', fileName: file.name, dataUrl: String(reader.result), uploadedAt: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) } : item) })
+    reader.onload = () => onChange({
+      ...customer,
+      documents: customer.documents.map((item) => item.id === documentId
+        ? {
+          ...item,
+          status: 'Uploaded',
+          fileName: file.name,
+          dataUrl: String(reader.result),
+          uploadedAt: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+        }
+        : item)
+    })
     reader.readAsDataURL(file)
   }
   function addDocument(event: FormEvent) {
-    event.preventDefault(); if (!newName.trim()) return
-    onChange({ ...customer, documents: [...customer.documents, { id: Date.now(), name: newName.trim(), category: 'Required', status: 'Missing' }] }); setNewName('')
+    event.preventDefault();
+    if (!newName.trim()) return
+    onChange({ ...customer, documents: [...customer.documents, { id: Date.now(), name: newName.trim(), category: 'Required', status: 'Missing' }] });
+    setNewName('')
   }
   return (
     <section className="panel">
@@ -386,12 +399,15 @@ function Documents({ customer, isAdmin, onChange }: { customer: Customer; isAdmi
               <small>{item.fileName ?? `${item.category} document`}{item.uploadedAt ? ` · ${item.uploadedAt}` : ''}</small>
             </div>
             <span className={`status ${item.status.toLowerCase()}`}>{item.status}</span>
-            <div className="document-actions">{item.fileName && <a className="icon-button" href={item.dataUrl ?? '#'} download={item.fileName} title="Download"><Download /></a>}
+            <div className="document-actions">
               {
                 isAdmin && item.status === 'Uploaded' &&
                 <button className="icon-button" title="Approve" onClick={() => onChange({ ...customer, documents: customer.documents.map((document) => document.id === item.id ? { ...document, status: 'Approved' } : document) })}>
                   <Check />
                 </button>
+              }
+              {
+                item.fileName && <a className="icon-button" href={item.dataUrl ?? '#'} download={item.fileName} title="Download"><Download /></a>
               }
               <label className="upload-button">
                 <Upload />
