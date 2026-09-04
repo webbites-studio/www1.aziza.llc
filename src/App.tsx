@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { createContext, useContext, useEffect, useState } from 'react'
 import type { FormEvent } from 'react'
 import {
   ArrowLeft, CalendarDays, Check, ChevronRight, CircleDollarSign,
@@ -10,6 +10,49 @@ import './App.css'
 type Role = 'admin' | 'customer'
 type View = 'overview' | 'documents' | 'schedule' | 'pricing' | 'guide'
 type Currency = 'KZT' | 'USD' | 'EUR' | 'RUB'
+type Language = 'en' | 'ru' | 'kk'
+
+const translations: Record<Language, Record<string, string>> = {
+  en: {},
+  ru: {
+    'Administration': 'Администрирование', 'My journey': 'Мой путь', Customers: 'Клиенты', Overview: 'Обзор', Documents: 'Документы', Schedule: 'Расписание', 'Services & pricing': 'Услуги и цены', 'Local guide': 'Гид по городу', 'Customer management': 'Управление клиентами', 'Welcome back': 'С возвращением', 'Secure portal': 'Защищенный портал', 'Add customer': 'Добавить клиента', 'All customers': 'Все клиенты', 'Document center': 'Центр документов', 'Journey schedule': 'Расписание поездки', 'All customer schedules': 'Расписание всех клиентов', 'Make yourself at home in Astana': 'Чувствуйте себя как дома в Астане', 'Welcome to Astana': 'Добро пожаловать в Астану', 'Sign in to continue your relocation journey.': 'Войдите, чтобы продолжить поездку.', 'Sign in': 'Войти', Customer: 'Клиент', Administrator: 'Администратор', Password: 'Пароль', 'Login or username': 'Логин или имя пользователя', 'Create portal access': 'Создать доступ к порталу', 'Amount due': 'Сумма к оплате', Paid: 'Оплачено', Arrival: 'Прибытие', Departure: 'Отъезд', 'Previous': 'Назад', Next: 'Далее', Month: 'Месяц', Week: 'Неделя', Day: 'День', 'Visa type': 'Тип визы', Request: 'Запрос', 'Overall progress': 'Общий прогресс'
+  },
+  kk: {
+    'Administration': 'Әкімшілік', 'My journey': 'Менің сапарым', Customers: 'Клиенттер', Overview: 'Шолу', Documents: 'Құжаттар', Schedule: 'Кесте', 'Services & pricing': 'Қызметтер мен бағалар', 'Local guide': 'Қала гиді', 'Customer management': 'Клиенттерді басқару', 'Welcome back': 'Қош келдіңіз', 'Secure portal': 'Қауіпсіз портал', 'Add customer': 'Клиент қосу', 'All customers': 'Барлық клиенттер', 'Document center': 'Құжаттар орталығы', 'Journey schedule': 'Сапар кестесі', 'All customer schedules': 'Барлық клиенттердің кестесі', 'Make yourself at home in Astana': 'Астанада өз үйіңіздегідей болыңыз', 'Welcome to Astana': 'Астанаға қош келдіңіз', 'Sign in to continue your relocation journey.': 'Сапарыңызды жалғастыру үшін кіріңіз.', 'Sign in': 'Кіру', Customer: 'Клиент', Administrator: 'Әкімші', Password: 'Құпиясөз', 'Login or username': 'Логин немесе пайдаланушы аты', 'Create portal access': 'Порталға қолжетімділік жасау', 'Amount due': 'Төленетін сома', Paid: 'Төленді', Arrival: 'Келу', Departure: 'Кету', Previous: 'Алдыңғы', Next: 'Келесі', Month: 'Ай', Week: 'Апта', Day: 'Күн', 'Visa type': 'Виза түрі', Request: 'Сұраныс', 'Overall progress': 'Жалпы барысы'
+  },
+}
+
+const extraTranslations: Record<Language, Record<string, string>> = {
+  en: {},
+  ru: {
+    'Profile created': 'Профиль создан', 'Plan confirmed': 'План подтвержден', 'Documents & appointments': 'Документы и встречи', 'Arrival complete': 'Прибытие завершено', 'Passport scan': 'Скан паспорта', 'Proof of income': 'Подтверждение дохода', 'Passport photo': 'Фото на паспорт', 'Employment contract': 'Трудовой договор', 'Birth certificate': 'Свидетельство о рождении', 'Flight ticket': 'Авиабилет', 'Hotel booking': 'Бронирование отеля', Missing: 'Отсутствует', Uploaded: 'Получено', Approved: 'Одобрено', 'Migration Service appointment': 'Встреча в миграционной службе', 'Bank appointment': 'Встреча в банке', 'Welcome lunch': 'Приветственный обед', 'Bank follow-up': 'Повторная встреча в банке', 'Accountant consultation': 'Консультация бухгалтера', 'Legal consultation': 'Юридическая консультация', 'Residence application': 'Подача на ВНЖ', 'Airport transfer': 'Трансфер из аэропорта', 'Hotel check-in': 'Заселение в отель', 'Passport preparation': 'Подготовка паспорта', 'Fingerprint preparation': 'Подготовка отпечатков', 'Bank account assistance': 'Помощь с банковским счетом', 'Salon appointment': 'Визит в салон', 'Translation services': 'Услуги перевода', 'BIN number': 'БИН', 'Personal Banking': 'Личный банкинг', 'Business Banking': 'Бизнес-банкинг', 'Phone line': 'Телефонная линия', 'Company registration': 'Регистрация компании', 'Other': 'Другое', 'Travel': 'Путешествие', Required: 'Обязательно', 'Select document': 'Выберите документ', 'Add request': 'Добавить запрос', 'Payment received in KZT': 'Полученный платеж в KZT', 'Save payment': 'Сохранить платеж', 'Paid': 'Оплачено', 'Total estimate': 'Итоговая оценка', 'Your relocation path': 'Ваш путь переезда', 'Nothing scheduled': 'Ничего не запланировано'
+  },
+  kk: {
+    'Profile created': 'Профиль жасалды', 'Plan confirmed': 'Жоспар расталды', 'Documents & appointments': 'Құжаттар мен кездесулер', 'Arrival complete': 'Келу аяқталды', 'Passport scan': 'Паспорт сканы', 'Proof of income': 'Табыс туралы анықтама', 'Passport photo': 'Паспорт суреті', 'Employment contract': 'Еңбек шарты', 'Birth certificate': 'Туу туралы куәлік', 'Flight ticket': 'Әуе билеті', 'Hotel booking': 'Қонақүй брондауы', Missing: 'Жоқ', Uploaded: 'Алынды', Approved: 'Мақұлданды', 'Migration Service appointment': 'Көші-қон қызметіндегі кездесу', 'Bank appointment': 'Банк кездесуі', 'Welcome lunch': 'Қош келдіңіз түскі асы', 'Bank follow-up': 'Банкке қайталама кездесу', 'Accountant consultation': 'Бухгалтер кеңесі', 'Legal consultation': 'Заң кеңесі', 'Residence application': 'Тұруға рұқсат өтініші', 'Airport transfer': 'Әуежай трансфері', 'Hotel check-in': 'Қонақүйге орналасу', 'Passport preparation': 'Паспорт дайындау', 'Fingerprint preparation': 'Саусақ іздерін дайындау', 'Bank account assistance': 'Банк шотына көмек', 'Salon appointment': 'Салонға кездесу', 'Translation services': 'Аударма қызметтері', 'BIN number': 'БСН', 'Personal Banking': 'Жеке банкинг', 'Business Banking': 'Бизнес банкинг', 'Phone line': 'Телефон желісі', 'Company registration': 'Компанияны тіркеу', 'Other': 'Басқа', 'Travel': 'Саяхат', Required: 'Міндетті', 'Select document': 'Құжатты таңдаңыз', 'Add request': 'Сұраныс қосу', 'Payment received in KZT': 'KZT бойынша алынған төлем', 'Save payment': 'Төлемді сақтау', 'Paid': 'Төленді', 'Total estimate': 'Жалпы есеп', 'Your relocation path': 'Сіздің көшу жолыңыз', 'Nothing scheduled': 'Жоспарланбаған'
+  },
+}
+const moreTranslations: Record<Language, Record<string, string>> = {
+  en: {},
+  ru: { 'Visa & request': 'Виза и запрос', Documents: 'Документы', 'Arrival & departure': 'Прибытие и отъезд', Progress: 'Прогресс', received: 'получено', to: 'до', 'still needed': 'еще требуется', 'Next appointment': 'Следующая встреча', 'Service estimate': 'Оценка услуг', 'Your relocation path': 'Ваш путь переезда', 'Everything your coordinator has prepared.': 'Все, что подготовил ваш координатор.', 'Mark each requested document complete when you are ready.': 'Отметьте документ выполненным, когда будете готовы.', 'Select document': 'Выберите документ', 'Enter document name': 'Введите название документа', 'Review appointments across every customer.': 'Просматривайте встречи всех клиентов.', 'Journey schedule': 'Расписание поездки', 'Your appointments and plans, day by day.': 'Ваши встречи и планы по дням.', 'Add to schedule': 'Добавить в расписание', 'New items appear in the customer portal instantly.': 'Новые записи сразу появятся на портале клиента.', 'Select appointment': 'Выберите встречу', 'Appointment name': 'Название встречи', 'Enter appointment name': 'Введите название встречи', 'Add appointment': 'Добавить встречу', 'Base pricing is in Kazakhstan tenge (KZT).': 'Базовые цены указаны в казахстанских тенге (KZT).', 'Update services and payment': 'Обновить услуги и платеж', 'Add a service or record the amount already paid.': 'Добавьте услугу или укажите уже оплаченную сумму.', Service: 'Услуга', 'Service name': 'Название услуги', 'Price in KZT': 'Цена в KZT', 'Add to estimate': 'Добавить к расчету', 'Payment received in KZT': 'Полученный платеж в KZT', 'Save payment': 'Сохранить платеж', 'Clear, local pricing': 'Понятные местные цены', 'Your coordinator updates this estimate as services are confirmed. Currency values are indicative.': 'Ваш координатор обновляет расчет по мере подтверждения услуг. Значения валют ориентировочные.', 'CURATED FOR YOUR STAY': 'ПОДОБРАНО ДЛЯ ВАШЕГО ПРОЖИВАНИЯ', 'Places selected by your local Aziza coordinator.': 'Места, выбранные вашим местным координатором Aziza.', 'PLACES TO STAY': 'ГДЕ ОСТАНОВИТЬСЯ', 'Hotels for your Astana stay': 'Отели для проживания в Астане', 'FOUR DAYS IN ASTANA': 'ТРИ ДНЯ В АСТАНЕ', 'A considered city itinerary': 'Продуманный маршрут по городу', 'A gentle rhythm of landmarks, local food and time to settle in.': 'Спокойный ритм достопримечательностей, местной кухни и времени для отдыха.', 'View details': 'Подробнее', 'active customer records': 'активных записей клиентов', 'Search customers': 'Поиск клиентов', 'Secure client portal': 'Безопасный портал клиента', 'Demo credentials are prefilled for each role.': 'Данные для демонстрации уже заполнены.' },
+  kk: { 'Visa & request': 'Виза және сұраныс', Documents: 'Құжаттар', 'Arrival & departure': 'Келу және кету', Progress: 'Барысы', received: 'алынды', to: 'дейін', 'still needed': 'әлі қажет', 'Next appointment': 'Келесі кездесу', 'Service estimate': 'Қызмет бағасы', 'Everything your coordinator has prepared.': 'Үйлестірушіңіз дайындаған барлық нәрсе.', 'Mark each requested document complete when you are ready.': 'Дайын болған кезде әр құжатты орындалды деп белгілеңіз.', 'Enter document name': 'Құжат атауын енгізіңіз', 'Review appointments across every customer.': 'Барлық клиенттердің кездесулерін қараңыз.', 'Your appointments and plans, day by day.': 'Күн сайынғы кездесулеріңіз бен жоспарларыңыз.', 'Add to schedule': 'Кестеге қосу', 'New items appear in the customer portal instantly.': 'Жаңа жазбалар клиент порталында бірден көрінеді.', 'Select appointment': 'Кездесуді таңдаңыз', 'Appointment name': 'Кездесу атауы', 'Enter appointment name': 'Кездесу атауын енгізіңіз', 'Add appointment': 'Кездесу қосу', 'Base pricing is in Kazakhstan tenge (KZT).': 'Негізгі бағалар Қазақстан теңгесімен (KZT).', 'Update services and payment': 'Қызметтер мен төлемді жаңарту', 'Add a service or record the amount already paid.': 'Қызмет қосыңыз немесе төленген соманы енгізіңіз.', Service: 'Қызмет', 'Service name': 'Қызмет атауы', 'Price in KZT': 'KZT бағасы', 'Add to estimate': 'Есепке қосу', 'Clear, local pricing': 'Түсінікті жергілікті бағалар', 'Your coordinator updates this estimate as services are confirmed. Currency values are indicative.': 'Үйлестірушіңіз қызметтер расталған сайын есепті жаңартады. Валюта мәндері шамамен берілген.', 'Places selected by your local Aziza coordinator.': 'Aziza жергілікті үйлестірушісі таңдаған орындар.', 'Hotels for your Astana stay': 'Астанада тұруға арналған қонақүйлер', 'A considered city itinerary': 'Астана бойынша ойластырылған маршрут', 'A gentle rhythm of landmarks, local food and time to settle in.': 'Көрікті жерлер, жергілікті тағам және демалысқа арналған жайлы ырғақ.', 'View details': 'Толығырақ', 'active customer records': 'белсенді клиент жазбасы', 'Search customers': 'Клиенттерді іздеу', 'Demo credentials are prefilled for each role.': 'Демо деректері алдын ала толтырылған.' },
+}
+const finalTranslations: Record<Language, Record<string, string>> = {
+  en: {},
+  ru: { 'Sign out': 'Выйти', 'All customers': 'Все клиенты', 'First name': 'Имя', 'Last name': 'Фамилия', 'Visa type': 'Тип визы', 'Request type': 'Тип запроса', 'Preferred currency': 'Предпочтительная валюта', 'Temporary password': 'Временный пароль', Cancel: 'Отмена', 'Create customer': 'Создать клиента', 'Date': 'Дата', 'Time': 'Время', 'Appointment': 'Встреча', 'Price in KZT': 'Цена в KZT', 'Converted at indicative rate': 'Пересчитано по ориентировочному курсу', 'Clear, local pricing': 'Понятные местные цены', 'Your coordinator updates this estimate as services are confirmed. Currency values are indicative.': 'Ваш координатор обновляет расчет по мере подтверждения услуг. Значения валют ориентировочные.', 'YOUR ARRIVAL, THOUGHTFULLY PLANNED': 'ВАШ ПРИЕЗД, ПРОДУМАННЫЙ ДО МЕЛОЧЕЙ', 'Settle into Astana with confidence.': 'Освойтесь в Астане с уверенностью.', 'Documents, appointments and local guidance for your move to Kazakhstan.': 'Документы, встречи и местные рекомендации для вашего переезда в Казахстан.' },
+  kk: { 'Sign out': 'Шығу', 'All customers': 'Барлық клиенттер', 'First name': 'Аты', 'Last name': 'Тегі', 'Visa type': 'Виза түрі', 'Request type': 'Сұраныс түрі', 'Preferred currency': 'Қалаған валюта', 'Temporary password': 'Уақытша құпиясөз', Cancel: 'Болдырмау', 'Create customer': 'Клиент жасау', Date: 'Күні', Time: 'Уақыты', Appointment: 'Кездесу', 'Price in KZT': 'KZT бағасы', 'Converted at indicative rate': 'Шамамен бағаммен есептелген', 'Clear, local pricing': 'Түсінікті жергілікті бағалар', 'Your coordinator updates this estimate as services are confirmed. Currency values are indicative.': 'Қызметтер расталған сайын үйлестіруші есепті жаңартады. Валюта мәндері шамамен берілген.', 'YOUR ARRIVAL, THOUGHTFULLY PLANNED': 'КЕЛУІҢІЗ ОЙЛАСТЫРЫЛҒАН', 'Settle into Astana with confidence.': 'Астанаға сенімді түрде бейімделіңіз.', 'Documents, appointments and local guidance for your move to Kazakhstan.': 'Қазақстанға көшуіңізге арналған құжаттар, кездесулер және жергілікті кеңестер.' },
+}
+const valueTranslations: Record<Language, Record<string, string>> = {
+  en: {},
+  ru: { 'Digital Nomad Visa': 'Виза цифрового кочевника', 'Work Visa': 'Рабочая виза', 'Residence Permit': 'Вид на жительство', 'Tourist Visa': 'Туристическая виза', 'Relocation assistance': 'Помощь с переездом', 'Company formation': 'Регистрация компании', 'Full service package': 'Полный пакет услуг' },
+  kk: { 'Digital Nomad Visa': 'Цифрлық көшпенді визасы', 'Work Visa': 'Жұмыс визасы', 'Residence Permit': 'Тұруға ықтиярхат', 'Tourist Visa': 'Туристік виза', 'Relocation assistance': 'Көшуге көмек', 'Company formation': 'Компания құру', 'Full service package': 'Толық қызмет пакеті' },
+}
+
+const LanguageContext = createContext<{ language: Language; setLanguage: (language: Language) => void }>({ language: 'en', setLanguage: () => undefined })
+function useLanguage() { const context = useContext(LanguageContext); return { ...context, t: (text: string) => valueTranslations[context.language][text] ?? finalTranslations[context.language][text] ?? moreTranslations[context.language][text] ?? extraTranslations[context.language][text] ?? translations[context.language][text] ?? text } }
+function LanguageSelect() {
+  const { language, setLanguage } = useLanguage()
+  return <label className="language-select"><span>Language</span><select aria-label="Language" value={language} onChange={(event) => setLanguage(event.target.value as Language)}><option value="en">English</option><option value="ru">Русский</option><option value="kk">Қазақша</option></select></label>
+}
 type DocumentItem = {
   id: number;
   name: string;
@@ -160,6 +203,7 @@ function shiftCalendarDate(date: string, mode: CalendarMode, direction: number) 
 function formatTime(time: string) { return new Date(`2026-01-01T${time}`).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' }) }
 
 function App() {
+  const [language, setLanguage] = useState<Language>(() => (localStorage.getItem('aziza-language') as Language) || 'en')
   const [customers, setCustomers] = useState<Customer[]>(() => {
     const saved = localStorage.getItem('aziza-customers')
     return saved ? JSON.parse(saved) : initialCustomers
@@ -171,11 +215,13 @@ function App() {
   const [showAddCustomer, setShowAddCustomer] = useState(false)
 
   useEffect(() => localStorage.setItem('aziza-customers', JSON.stringify(customers)), [customers])
+  useEffect(() => localStorage.setItem('aziza-language', language), [language])
+  const t = (text: string) => finalTranslations[language][text] ?? moreTranslations[language][text] ?? extraTranslations[language][text] ?? translations[language][text] ?? text
   const activeId = session?.role === 'customer' ? session.customerId! : selectedId
   const customer = customers.find((item) => item.id === activeId) ?? customers[0]
   const updateCustomer = (modifiedCustomer: Customer) => setCustomers((existingCustomers) => existingCustomers.map((item) => item.id === modifiedCustomer.id ? modifiedCustomer : item))
 
-  if (!session) return <Login customers={customers} onLogin={setSession} />
+  if (!session) return <LanguageContext.Provider value={{ language, setLanguage }}><Login customers={customers} onLogin={setSession} /></LanguageContext.Provider>
   const isAdmin = session.role === 'admin'
   const navItems: { id: View; label: string; icon: typeof LayoutDashboard }[] = [
     { id: 'overview', label: 'Overview', icon: LayoutDashboard },
@@ -185,29 +231,30 @@ function App() {
     { id: 'guide', label: 'Local guide', icon: MapPinned },
   ]
 
-  return (
+  return <LanguageContext.Provider value={{ language, setLanguage }}>
+    <>
     <div className="app-shell">
       <aside className={`sidebar ${mobileNav ? 'open' : ''}`}>
         <div className="brand"><span>A</span><div>AZIZA<small>Astana concierge</small></div></div>
         <button className="mobile-close icon-button" onClick={() => setMobileNav(false)} aria-label="Close menu"><X /></button>
-        <div className="role-label">{isAdmin ? 'Administration' : 'My journey'}</div>
+        <div className="role-label">{t(isAdmin ? 'Administration' : 'My journey')}</div>
         <nav>
-          {isAdmin && <button className={view === 'overview' ? 'active' : ''} onClick={() => { setView('overview'); setMobileNav(false) }}><Users />Customers</button>}
-          {!isAdmin && navItems.map(({ id, label, icon: Icon }) => <button key={id} className={view === id ? 'active' : ''} onClick={() => { setView(id); setMobileNav(false) }}><Icon />{label}</button>)}
-          {isAdmin && navItems.slice(1).map(({ id, label, icon: Icon }) => <button key={id} className={view === id ? 'active' : ''} onClick={() => { setView(id); setMobileNav(false) }}><Icon />{label}</button>)}
+          {isAdmin && <button className={view === 'overview' ? 'active' : ''} onClick={() => { setView('overview'); setMobileNav(false) }}><Users />{t('Customers')}</button>}
+          {!isAdmin && navItems.map(({ id, label, icon: Icon }) => <button key={id} className={view === id ? 'active' : ''} onClick={() => { setView(id); setMobileNav(false) }}><Icon />{t(label)}</button>)}
+          {isAdmin && navItems.slice(1).map(({ id, label, icon: Icon }) => <button key={id} className={view === id ? 'active' : ''} onClick={() => { setView(id); setMobileNav(false) }}><Icon />{t(label)}</button>)}
         </nav>
         <div className="sidebar-user">
           <div className="avatar">{isAdmin ? 'AV' : `${customer.firstName[0]}${customer.lastName[0]}`}</div>
           <div><strong>{isAdmin ? 'Aziza V.' : `${customer.firstName} ${customer.lastName}`}</strong><small>{isAdmin ? 'Administrator' : 'Customer portal'}</small></div>
-          <button className="icon-button" onClick={() => setSession(null)} aria-label="Sign out" title="Sign out"><LogOut /></button>
+          <button className="icon-button" onClick={() => setSession(null)} aria-label={t('Sign out')} title={t('Sign out')}><LogOut /></button>
         </div>
       </aside>
 
       <main>
         <header className="topbar">
           <button className="mobile-menu icon-button" onClick={() => setMobileNav(true)} aria-label="Open menu"><Menu /></button>
-          <div><p>{isAdmin ? 'Customer management' : 'Welcome back'}</p><h1>{isAdmin && view === 'overview' ? 'Customers' : `${customer.firstName} ${customer.lastName}`}</h1></div>
-          <div className="topbar-actions"><span className="secure"><ShieldCheck /> Secure portal</span>{isAdmin && view === 'overview' && <button className="primary" onClick={() => setShowAddCustomer(true)}><Plus />Add customer</button>}</div>
+          <div><p>{t(isAdmin ? 'Customer management' : 'Welcome back')}</p><h1>{isAdmin && view === 'overview' ? t('Customers') : `${customer.firstName} ${customer.lastName}`}</h1></div>
+          <div className="topbar-actions"><LanguageSelect /><span className="secure"><ShieldCheck /> {t('Secure portal')}</span>{isAdmin && view === 'overview' && <button className="primary" onClick={() => setShowAddCustomer(true)}><Plus />{t('Add customer')}</button>}</div>
         </header>
 
         <div className="content">
@@ -215,7 +262,7 @@ function App() {
             isAdmin && view === 'overview'
               ? <Customers customers={customers} onOpen={(id) => { setSelectedId(id); setView('documents') }} />
               : <>
-                {isAdmin && <button className="back-link" onClick={() => setView('overview')}><ArrowLeft />All customers</button>}
+                {isAdmin && <button className="back-link" onClick={() => setView('overview')}><ArrowLeft />{t('All customers')}</button>}
                 <ProfileStrip customer={customer} isAdmin={isAdmin} onChange={updateCustomer} />
                 {view === 'overview' && <CustomerOverview customer={customer} onNavigate={setView} />}
                 {view === 'documents' && <Documents customer={customer} isAdmin={isAdmin} onChange={updateCustomer} />}
@@ -228,10 +275,12 @@ function App() {
       </main>
       {showAddCustomer && <AddCustomer onClose={() => setShowAddCustomer(false)} onAdd={(newCustomer) => { setCustomers((current) => [...current, newCustomer]); setShowAddCustomer(false) }} nextId={Math.max(...customers.map((item) => item.id)) + 1} />}
     </div>
-  )
+    </>
+  </LanguageContext.Provider>
 }
 
 function Login({ customers, onLogin }: { customers: Customer[]; onLogin: (session: { role: Role; customerId?: number }) => void }) {
+  const { t } = useLanguage()
   const [role, setRole] = useState<Role>('customer')
   const [email, setEmail] = useState('elena@example.com')
   const [password, setPassword] = useState('welcome123')
@@ -250,20 +299,21 @@ function Login({ customers, onLogin }: { customers: Customer[]; onLogin: (sessio
   }
   return <div className="login-page">
     <section className="login-scene">
-      <div className="scene-brand"><span>A</span> AZIZA</div><div className="scene-copy"><p>YOUR ARRIVAL, THOUGHTFULLY PLANNED</p><h1>Settle into Astana with confidence.</h1><span>Documents, appointments and local guidance for your move to Kazakhstan.</span></div><div className="scene-credit">Astana, Kazakhstan</div>
+      <div className="scene-brand"><span>A</span> AZIZA</div><div className="scene-copy"><p>{t('YOUR ARRIVAL, THOUGHTFULLY PLANNED')}</p><h1>{t('Settle into Astana with confidence.')}</h1><span>{t('Documents, appointments and local guidance for your move to Kazakhstan.')}</span></div><div className="scene-credit">Astana, Kazakhstan</div>
     </section>
     <section className="login-panel">
       <div className="login-box">
-        <div className="eyebrow">SECURE CLIENT PORTAL</div><h2>Welcome to Astana</h2><p>Sign in to continue your relocation journey.</p>
+        <div className="eyebrow">SECURE CLIENT PORTAL</div><h2>{t('Welcome to Astana')}</h2><p>{t('Sign in to continue your relocation journey.')}</p>
+        <LanguageSelect />
         <div className="role-switch">
-          <button className={role === 'customer' ? 'active' : ''} onClick={() => switchRole('customer')}>Customer</button>
-          <button className={role === 'admin' ? 'active' : ''} onClick={() => switchRole('admin')}>Administrator</button>
+          <button className={role === 'customer' ? 'active' : ''} onClick={() => switchRole('customer')}>{t('Customer')}</button>
+          <button className={role === 'admin' ? 'active' : ''} onClick={() => switchRole('admin')}>{t('Administrator')}</button>
         </div>
         <form onSubmit={submit}>
-          <label>Login or username<input type="text" value={email} onChange={(event) => setEmail(event.target.value)} required /></label>
-          <label>Password<input type="password" value={password} onChange={(event) => setPassword(event.target.value)} required /></label>
+          <label>{t('Login or username')}<input type="text" value={email} onChange={(event) => setEmail(event.target.value)} required /></label>
+          <label>{t('Password')}<input type="password" value={password} onChange={(event) => setPassword(event.target.value)} required /></label>
           {error && <div className="form-error">{error}</div>}
-          <button className="primary login-submit" type="submit">Sign in <ChevronRight /></button>
+          <button className="primary login-submit" type="submit">{t('Sign in')} <ChevronRight /></button>
         </form>
         <div className="demo-note">Demo credentials are prefilled for each role.</div>
       </div>
@@ -272,17 +322,18 @@ function Login({ customers, onLogin }: { customers: Customer[]; onLogin: (sessio
 }
 
 function Customers({ customers, onOpen }: { customers: Customer[]; onOpen: (id: number) => void }) {
+  const { t } = useLanguage()
   const [query, setQuery] = useState('')
   const filtered = customers.filter((item) => `${item.firstName} ${item.lastName} ${item.email}`.toLowerCase().includes(query.toLowerCase()))
   console.log('customers', customers.length, 'query', query, 'filtered', filtered.length)
   return (
     <section className="panel customer-panel">
       <div className="panel-head">
-        <div><h2>All customers</h2><p>{customers.length} active customer records</p></div>
-        <label className="search"><Search /><input placeholder="Search customers" value={query} onChange={(event) => setQuery(event.target.value)} /></label>
+        <div><h2>{t('All customers')}</h2><p>{customers.length} {t('active customer records')}</p></div>
+        <label className="search"><Search /><input placeholder={t('Search customers')} value={query} onChange={(event) => setQuery(event.target.value)} /></label>
       </div>
       <div className="customer-table">
-        <div className="table-row table-heading"><span>Customer</span><span>Visa & request</span><span>Documents</span><span>Arrival & departure</span><span>Progress</span><span></span></div>
+        <div className="table-row table-heading"><span>{t('Customer')}</span><span>{t('Visa & request')}</span><span>{t('Documents')}</span><span>{t('Arrival & departure')}</span><span>{t('Progress')}</span><span></span></div>
         {filtered.map((item) => {
           const uploaded = item.documents.filter((document) => document.status !== 'Missing').length;
           return (
@@ -291,9 +342,9 @@ function Customers({ customers, onOpen }: { customers: Customer[]; onOpen: (id: 
                 <b className="avatar">{item.firstName[0]}{item.lastName[0]}</b>
                 <span><strong>{item.firstName} {item.lastName}</strong><small>{item.email}</small></span>
               </span>
-              <span><strong>{item.visaType}</strong><small>{item.requestType}</small></span>
-              <span><strong>{uploaded} / {item.documents.length}</strong><small>received</small></span>
-              <span><strong>{formatTravelDate(item.arrivalDate)}</strong><small>to {formatTravelDate(item.departureDate)}</small></span>
+              <span><strong>{t(item.visaType)}</strong><small>{t(item.requestType)}</small></span>
+              <span><strong>{uploaded} / {item.documents.length}</strong><small>{t('received')}</small></span>
+              <span><strong>{formatTravelDate(item.arrivalDate)}</strong><small>{t('to')} {formatTravelDate(item.departureDate)}</small></span>
               <span className="progress-cell"><span><i style={{ width: `${item.progress}%` }} /></span><small>{item.progress}%</small></span>
               <span><ChevronRight /></span>
             </button>
@@ -305,6 +356,7 @@ function Customers({ customers, onOpen }: { customers: Customer[]; onOpen: (id: 
 }
 
 function ProfileStrip({ customer, isAdmin, onChange }: { customer: Customer; isAdmin: boolean; onChange: (customer: Customer) => void }) {
+  const { t } = useLanguage()
   return (
     <div className="profile-strip">
       <div className="profile-person">
@@ -319,25 +371,25 @@ function ProfileStrip({ customer, isAdmin, onChange }: { customer: Customer; isA
       </div>
       <dl>
         <div>
-          <dt>Visa type
+          <dt>{t('Visa type')}
           </dt>
-          <dd>{customer.visaType}
+          <dd>{t(customer.visaType)}
           </dd>
         </div>
         <div>
-          <dt>Request
+          <dt>{t('Request')}
           </dt>
-          <dd>{customer.requestType}
+          <dd>{t(customer.requestType)}
           </dd>
         </div>
         <div>
-          <dt>Overall progress
+          <dt>{t('Overall progress')}
           </dt>
           <dd>{customer.progress}%
           </dd>
         </div>
         <div>
-          <dt>Arrival
+          <dt>{t('Arrival')}
           </dt>
           <dd>{isAdmin
             ? <input aria-label="Arrival date" type="date" value={customer.arrivalDate ?? ''} onChange={(event) => onChange({ ...customer, arrivalDate: event.target.value })} />
@@ -345,7 +397,7 @@ function ProfileStrip({ customer, isAdmin, onChange }: { customer: Customer; isA
           </dd>
         </div>
         <div>
-          <dt>Departure
+          <dt>{t('Departure')}
           </dt>
           <dd>{isAdmin
             ? <input aria-label="Departure date" type="date" value={customer.departureDate ?? ''} onChange={(event) => onChange({ ...customer, departureDate: event.target.value })} />
@@ -358,6 +410,7 @@ function ProfileStrip({ customer, isAdmin, onChange }: { customer: Customer; isA
 }
 
 function CustomerOverview({ customer, onNavigate }: { customer: Customer; onNavigate: (view: View) => void }) {
+  const { t } = useLanguage()
   const next = [...customer.schedule].sort((a, b) => `${a.date}${a.time}`.localeCompare(`${b.date}${b.time}`))[0]
   const missing = customer.documents.filter((item) => item.status === 'Missing').length
   return (
@@ -365,23 +418,23 @@ function CustomerOverview({ customer, onNavigate }: { customer: Customer; onNavi
       <button className="summary-card" onClick={() => onNavigate('documents')}>
         <FileText />
         <span>
-          <small>Documents</small>
-          <strong>{missing} still needed</strong>
+          <small>{t('Documents')}</small>
+          <strong>{missing} {t('still needed')}</strong>
         </span>
         <ChevronRight />
       </button>
       <button className="summary-card" onClick={() => onNavigate('schedule')}>
         <CalendarDays />
         <span>
-          <small>Next appointment</small>
-          <strong>{next ? `${formatDate(next.date)}, ${formatTime(next.time)}` : 'Nothing scheduled'}</strong>
+          <small>{t('Next appointment')}</small>
+          <strong>{next ? `${formatDate(next.date)}, ${formatTime(next.time)}` : t('Nothing scheduled')}</strong>
         </span>
         <ChevronRight />
       </button>
       <button className="summary-card" onClick={() => onNavigate('pricing')}>
         <CircleDollarSign />
         <span>
-          <small>Service estimate</small>
+          <small>{t('Service estimate')}</small>
           <strong>₸{customer.services.reduce((sum, item) => sum + item.price, 0).toLocaleString()}</strong>
         </span>
         <ChevronRight />
@@ -389,19 +442,19 @@ function CustomerOverview({ customer, onNavigate }: { customer: Customer; onNavi
       <section className="panel overview-wide">
         <div className="panel-head">
           <div>
-            <h2>Your relocation path</h2>
-            <p>Everything your coordinator has prepared.</p>
+            <h2>{t('Your relocation path')}</h2>
+            <p>{t('Everything your coordinator has prepared.')}</p>
           </div>
         </div>
         <div className="path-steps">
           <span className="done"><Check /></span>
-          <b>Profile created</b>
+          <b>{t('Profile created')}</b>
           <span className="done"><Check /></span>
-          <b>Plan confirmed</b>
+          <b>{t('Plan confirmed')}</b>
           <span className="current">3</span>
-          <b>Documents & appointments</b>
+          <b>{t('Documents & appointments')}</b>
           <span>4</span>
-          <b>Arrival complete</b>
+          <b>{t('Arrival complete')}</b>
         </div>
       </section>
     </div>
@@ -409,6 +462,7 @@ function CustomerOverview({ customer, onNavigate }: { customer: Customer; onNavi
 }
 
 function Documents({ customer, isAdmin, onChange }: { customer: Customer; isAdmin: boolean; onChange: (customer: Customer) => void }) {
+  const { t } = useLanguage()
   const [newName, setNewName] = useState('')
   const [documentChoice, setDocumentChoice] = useState('')
   function markDone(documentId: number) {
@@ -435,17 +489,17 @@ function Documents({ customer, isAdmin, onChange }: { customer: Customer; isAdmi
     <section className="panel">
       <div className="panel-head">
         <div>
-          <h2>Document center</h2>
-          <p>Mark each requested document complete when you are ready.</p>
+          <h2>{t('Document center')}</h2>
+          <p>{t('Mark each requested document complete when you are ready.')}</p>
         </div>
         {isAdmin &&
           <form className="inline-form" onSubmit={addDocument}>
             <select aria-label="Document request" value={documentChoice} onChange={(event) => { setDocumentChoice(event.target.value); setNewName(event.target.value === 'Other' ? '' : event.target.value) }} required>
-              <option value="" disabled>Select document</option>
-              {documentOptions.map((item) => <option key={item}>{item}</option>)}
+              <option value="" disabled>{t('Select document')}</option>
+              {documentOptions.map((item) => <option key={item} value={item}>{t(item)}</option>)}
             </select>
-            {documentChoice === 'Other' && <input aria-label="Document name" placeholder="Enter document name" value={newName} onChange={(event) => setNewName(event.target.value)} required />}
-            <button className="secondary" type="submit"><Plus />Add request</button>
+            {documentChoice === 'Other' && <input aria-label="Document name" placeholder={t('Enter document name')} value={newName} onChange={(event) => setNewName(event.target.value)} required />}
+            <button className="secondary" type="submit"><Plus />{t('Add request')}</button>
           </form>
         }
       </div>
@@ -456,11 +510,11 @@ function Documents({ customer, isAdmin, onChange }: { customer: Customer; isAdmi
               <FileText />
             </div>
             <div className="document-name">
-              <strong>{item.name}</strong>
-              <small>{item.fileName ?? `${item.category} document`}{item.uploadedAt ? ` · ${item.uploadedAt}` : ''}</small>
+              <strong>{t(item.name)}</strong>
+              <small>{item.fileName ?? `${t(item.category)} document`}{item.uploadedAt ? ` · ${item.uploadedAt}` : ''}</small>
             </div>
             {!isAdmin &&
-              <span className={`status ${item.status.toLowerCase()}`} aria-label={item.status}>
+              <span className={`status ${item.status.toLowerCase()}`} aria-label={t(item.status)}>
                 {item.status === 'Missing' && <X aria-hidden="true" />}
                 {item.status !== 'Missing' && <Check aria-hidden="true" />}
               </span>
@@ -482,6 +536,7 @@ function Documents({ customer, isAdmin, onChange }: { customer: Customer; isAdmi
 type CalendarMode = 'month' | 'week' | 'day'
 
 function AdminCalendar({ customers }: { customers: Customer[] }) {
+  const { t } = useLanguage()
   const firstAppointment = customers.flatMap((item) => item.schedule).map((item) => item.date).sort()[0] ?? '2026-08-12'
   const [mode, setMode] = useState<CalendarMode>('month')
   const [anchorDate, setAnchorDate] = useState(firstAppointment)
@@ -491,13 +546,13 @@ function AdminCalendar({ customers }: { customers: Customer[] }) {
   return (
     <section className="panel admin-calendar">
       <div className="panel-head">
-        <div><h2>All customer schedules</h2><p>Review appointments across every customer.</p><strong className="calendar-period">{formatCalendarPeriod(anchorDate, mode)}</strong></div>
+        <div><h2>{t('All customer schedules')}</h2><p>{t('Review appointments across every customer.')}</p><strong className="calendar-period">{formatCalendarPeriod(anchorDate, mode)}</strong></div>
         <div className="calendar-controls">
-          <button className="calendar-nav" onClick={() => setAnchorDate(shiftCalendarDate(anchorDate, mode, -1))}>Previous</button>
+          <button className="calendar-nav" onClick={() => setAnchorDate(shiftCalendarDate(anchorDate, mode, -1))}>{t('Previous')}</button>
           {(['month', 'week', 'day'] as CalendarMode[]).map((calendarMode) =>
-            <button key={calendarMode} className={`calendar-mode ${mode === calendarMode ? 'active' : ''}`} onClick={() => setMode(calendarMode)}>{calendarMode[0].toUpperCase() + calendarMode.slice(1)}</button>
+            <button key={calendarMode} className={`calendar-mode ${mode === calendarMode ? 'active' : ''}`} onClick={() => setMode(calendarMode)}>{t(calendarMode[0].toUpperCase() + calendarMode.slice(1))}</button>
           )}
-          <button className="calendar-nav" onClick={() => setAnchorDate(shiftCalendarDate(anchorDate, mode, 1))}>Next</button>
+          <button className="calendar-nav" onClick={() => setAnchorDate(shiftCalendarDate(anchorDate, mode, 1))}>{t('Next')}</button>
         </div>
       </div>
       <div className={`calendar-grid ${mode}`}>
@@ -506,7 +561,7 @@ function AdminCalendar({ customers }: { customers: Customer[] }) {
           const dayAppointments = appointments.filter((item) => item.date === date).sort((a, b) => a.time.localeCompare(b.time))
           return <div className="calendar-day" key={date}>
             <strong>{formatCalendarDate(date, mode)}</strong>
-            {dayAppointments.map((item) => <div className="calendar-appointment" key={`${item.customerName}-${item.id}`}><time>{formatTime(item.time)}</time><b>{item.title}</b><small>{item.customerName}</small></div>)}
+            {dayAppointments.map((item) => <div className="calendar-appointment" key={`${item.customerName}-${item.id}`}><time>{formatTime(item.time)}</time><b>{t(item.title)}</b><small>{item.customerName}</small></div>)}
           </div>
         })}
       </div>
@@ -515,6 +570,7 @@ function AdminCalendar({ customers }: { customers: Customer[] }) {
 }
 
 function Schedule({ customer, customers, isAdmin, onChange }: { customer: Customer; customers: Customer[]; isAdmin: boolean; onChange: (customer: Customer) => void }) {
+  const { t } = useLanguage()
   const [draft, setDraft] = useState({ date: '2026-08-12', time: '12:00', title: '', location: '' })
   const [appointmentChoice, setAppointmentChoice] = useState('')
   const grouped = customer.schedule.reduce<Record<string, ScheduleItem[]>>((groups, item) => ({ ...groups, [item.date]: [...(groups[item.date] ?? []), item] }), {})
@@ -531,7 +587,7 @@ function Schedule({ customer, customers, isAdmin, onChange }: { customer: Custom
     <div className="two-column">
       {isAdmin ? <AdminCalendar customers={customers} /> : <section className="panel">
           <div className="panel-head">
-            <div><h2>Journey schedule</h2><p>Your appointments and plans, day by day.</p></div>
+            <div><h2>{t('Journey schedule')}</h2><p>{t('Your appointments and plans, day by day.')}</p></div>
           </div>
           <div className="timeline">
           {Object.entries(grouped).sort(([a], [b]) => a.localeCompare(b)).map(([date, items]) =>
@@ -545,7 +601,7 @@ function Schedule({ customer, customers, isAdmin, onChange }: { customer: Custom
                   <div className="timeline-item" key={item.id}>
                     <time>{formatTime(item.time)}</time><span></span>
                     <div>
-                      <strong>{item.title}</strong><small>{item.location}</small>
+                      <strong>{t(item.title)}</strong><small>{item.location}</small>
                     </div>
                   </div>
                 )}
@@ -556,29 +612,29 @@ function Schedule({ customer, customers, isAdmin, onChange }: { customer: Custom
         </section>}
       {isAdmin &&
         <section className="panel form-panel">
-          <h2>Add to schedule
+          <h2>{t('Add to schedule')}
           </h2>
-          <p>New items appear in the customer portal instantly.
+          <p>{t('New items appear in the customer portal instantly.')}
           </p>
           <form onSubmit={add}>
-            <label>Date
+            <label>{t('Date')}
               <input type="date" value={draft.date} onChange={(event) => setDraft({ ...draft, date: event.target.value })} required />
             </label>
-            <label>Time
+            <label>{t('Time')}
               <input type="time" value={draft.time} onChange={(event) => setDraft({ ...draft, time: event.target.value })} required />
             </label>
-            <label>Appointment
+            <label>{t('Appointment')}
               <select value={appointmentChoice} onChange={(event) => { setAppointmentChoice(event.target.value); setDraft({ ...draft, title: event.target.value === 'Other' ? '' : event.target.value }) }} required>
-                <option value="" disabled>Select appointment</option>
-                {appointmentOptions.map((item) => <option key={item}>{item}</option>)}
+                <option value="" disabled>{t('Select appointment')}</option>
+                {appointmentOptions.map((item) => <option key={item} value={item}>{t(item)}</option>)}
               </select>
             </label>
             {appointmentChoice === 'Other' &&
-              <label>Appointment name
-                <input value={draft.title} onChange={(event) => setDraft({ ...draft, title: event.target.value })} placeholder="Enter appointment name" required />
+              <label>{t('Appointment name')}
+                <input value={draft.title} onChange={(event) => setDraft({ ...draft, title: event.target.value })} placeholder={t('Enter appointment name')} required />
               </label>
             }
-            <button className="primary" type="submit"><Plus />Add appointment</button>
+            <button className="primary" type="submit"><Plus />{t('Add appointment')}</button>
           </form>
         </section>
       }
@@ -586,6 +642,7 @@ function Schedule({ customer, customers, isAdmin, onChange }: { customer: Custom
 }
 
 function Pricing({ customer, isAdmin, onChange }: { customer: Customer; isAdmin: boolean; onChange: (customer: Customer) => void }) {
+  const { t } = useLanguage()
   const [service, setService] = useState(serviceOptions[0]);
   const [otherService, setOtherService] = useState('');
   const [price, setPrice] = useState('');
@@ -639,7 +696,7 @@ function Pricing({ customer, isAdmin, onChange }: { customer: Customer; isAdmin:
     <div className="two-column pricing-layout">
       <section className="panel">
         <div className="panel-head">
-          <div><h2>Services & pricing</h2><p>Base pricing is in Kazakhstan tenge (KZT). National Bank rate: {rateDate || 'loading...'}</p></div>
+          <div><h2>{t('Services & pricing')}</h2><p>{t('Base pricing is in Kazakhstan tenge (KZT).')} National Bank rate: {rateDate || 'loading...'}</p></div>
           <select value={customer.currency} onChange={(event) => onChange({ ...customer, currency: event.target.value as Currency })}>
             <option value="KZT">KZT ₸</option>
             <option value="USD">USD $</option>
@@ -649,52 +706,52 @@ function Pricing({ customer, isAdmin, onChange }: { customer: Customer; isAdmin:
         </div>
         <div className="price-list">{customer.services.map((item) =>
           <div key={item.id}>
-            <span>{item.name}</span>
+            <span>{t(item.name)}</span>
             <strong>₸{item.price.toLocaleString()}</strong>
             <small>{customer.currency !== 'KZT' ? `≈ ${currencySymbols[customer.currency]}${(item.price * rates[customer.currency]).toLocaleString(undefined, { maximumFractionDigits: 0 })}` : ''}</small>
           </div>)}
         </div>
         <div className="price-total">
-          <span>Total estimate<small>Converted at indicative rate</small></span>
+          <span>{t('Total estimate')}<small>{t('Converted at indicative rate')}</small></span>
           <strong>₸{total.toLocaleString()}
             <small>{customer.currency !== 'KZT' ? `≈ ${currencySymbols[customer.currency]}${(total * rates[customer.currency]).toLocaleString(undefined, { maximumFractionDigits: 0 })}` : ''}
             </small>
           </strong>
         </div>
         <div className="balance-list">
-          <div><span>Paid</span><strong>₸{paid.toLocaleString()}</strong></div>
-          <div><span>Amount due</span><strong>₸{outstanding.toLocaleString()}</strong></div>
+          <div><span>{t('Paid')}</span><strong>₸{paid.toLocaleString()}</strong></div>
+          <div><span>{t('Amount due')}</span><strong>₸{outstanding.toLocaleString()}</strong></div>
         </div>
       </section>
       {
         isAdmin
           ? <section className="panel form-panel">
-            <h2>Update services and payment</h2><p>Add a service or record the amount already paid.</p>
+            <h2>{t('Update services and payment')}</h2><p>{t('Add a service or record the amount already paid.')}</p>
             <form onSubmit={add}>
-              <label>Service
+              <label>{t('Service')}
                 <select value={service} onChange={(event) => setService(event.target.value)}>
-                  {serviceOptions.map((item) => <option key={item}>{item}</option>)}
+                  {serviceOptions.map((item) => <option key={item} value={item}>{t(item)}</option>)}
                 </select>
               </label>
               {service === 'Other' &&
-                <label>Service name
+                <label>{t('Service name')}
                   <input value={otherService} onChange={(event) => setOtherService(event.target.value)} placeholder="Enter service name" required />
                 </label>
               }
-              <label>Price in KZT
+              <label>{t('Price in KZT')}
                 <input type="number" step="any" value={price} onChange={(event) => setPrice(event.target.value)} placeholder="0" required />
               </label>
-              <button className="primary" type="submit"><Plus />Add to estimate</button>
+              <button className="primary" type="submit"><Plus />{t('Add to estimate')}</button>
             </form>
             <form onSubmit={savePayment}>
-              <label>Payment received in KZT
+              <label>{t('Payment received in KZT')}
                 <input type="number" step="any" min="0" value={paidInput} onChange={(event) => setPaidInput(event.target.value)} placeholder="0" required />
               </label>
-              <button className="secondary" type="submit">Save payment</button>
+              <button className="secondary" type="submit">{t('Save payment')}</button>
             </form>
           </section>
           : <section className="quote-note">
-            <CircleDollarSign /><h3>Clear, local pricing</h3><p>Your coordinator updates this estimate as services are confirmed. Currency values are indicative.</p>
+            <CircleDollarSign /><h3>{t('Clear, local pricing')}</h3><p>{t('Your coordinator updates this estimate as services are confirmed. Currency values are indicative.')}</p>
           </section>
       }
     </div>
@@ -702,29 +759,30 @@ function Pricing({ customer, isAdmin, onChange }: { customer: Customer; isAdmin:
 }
 
 function Guide() {
+  const { t } = useLanguage()
   return (
     <section>
       <div className="section-intro">
         <div>
           <span className="eyebrow">CURATED FOR YOUR STAY</span>
-          <h2>Make yourself at home in Astana</h2>
-          <p>Places selected by your local Aziza coordinator.</p>
+            <h2>{t('Make yourself at home in Astana')}</h2>
+            <p>{t('Places selected by your local Aziza coordinator.')}</p>
         </div>
       </div>
       <div className="guide-subsection">
         <div className="guide-subsection-head">
-          <span className="eyebrow">PLACES TO STAY</span>
-          <h2>Hotels for your Astana stay</h2>
+          <span className="eyebrow">{t('PLACES TO STAY')}</span>
+          <h2>{t('Hotels for your Astana stay')}</h2>
         </div>
         <div className="guide-grid hotel-grid">
           {hotelItems.map((item) =>
             <article key={item.name}>
               <img src={item.image} alt={item.name} />
               <div>
-                <span>{item.type}</span>
+                <span>{t(item.type)}</span>
                 <h3>{item.name}</h3>
                 <p>{item.note}</p>
-                <a href={item.link ?? '#'} target={item.link ? '_blank' : undefined} rel={item.link ? 'noreferrer' : undefined} aria-label={`View ${item.name}`}><Eye />View details</a>
+                <a href={item.link ?? '#'} target={item.link ? '_blank' : undefined} rel={item.link ? 'noreferrer' : undefined} aria-label={`${t('View details')} ${item.name}`}><Eye />{t('View details')}</a>
               </div>
             </article>
           )}
@@ -732,9 +790,9 @@ function Guide() {
       </div>
       <div className="itinerary">
         <div className="itinerary-head">
-          <span className="eyebrow">FOUR DAYS IN ASTANA</span>
-          <h2>A considered city itinerary</h2>
-          <p>A gentle rhythm of landmarks, local food and time to settle in.</p>
+          <span className="eyebrow">{t('FOUR DAYS IN ASTANA')}</span>
+          <h2>{t('A considered city itinerary')}</h2>
+          <p>{t('A gentle rhythm of landmarks, local food and time to settle in.')}</p>
         </div>
         <div className="itinerary-grid">
           {itinerary.map((item) =>
@@ -752,6 +810,7 @@ function Guide() {
 }
 
 function AddCustomer({ onClose, onAdd, nextId }: { onClose: () => void; onAdd: (customer: Customer) => void; nextId: number }) {
+  const { t } = useLanguage()
   const [draft, setDraft] = useState({ firstName: '', lastName: '', dob: '', visaType: 'Digital Nomad Visa', requestType: 'Relocation assistance', email: '', password: 'welcome123', currency: 'KZT' as Currency })
 
   function submit(event: FormEvent) {
@@ -765,28 +824,28 @@ function AddCustomer({ onClose, onAdd, nextId }: { onClose: () => void; onAdd: (
         <div className="modal-head">
           <div>
             <span className="eyebrow">NEW CUSTOMER</span>
-            <h2>Create portal access</h2>
+            <h2>{t('Create portal access')}</h2>
           </div>
           <button className="icon-button" onClick={onClose}><X /></button>
         </div>
         <form onSubmit={submit}>
           <div className="form-grid">
-            <label>First name
+            <label>{t('First name')}
               <input value={draft.firstName} onChange={(event) => setDraft({ ...draft, firstName: event.target.value })} required />
             </label>
-            <label>Last name
+            <label>{t('Last name')}
               <input value={draft.lastName} onChange={(event) => setDraft({ ...draft, lastName: event.target.value })} required />
             </label>
-            <label>Visa type
+            <label>{t('Visa type')}
               <select value={draft.visaType} onChange={(event) => setDraft({ ...draft, visaType: event.target.value })}>
-                <option>Digital Nomad Visa</option>
-                <option>Work Visa</option>
-                <option>Residence Permit</option>
-                <option>Tourist Visa</option>
+                <option value="Digital Nomad Visa">{t('Digital Nomad Visa')}</option>
+                <option value="Work Visa">{t('Work Visa')}</option>
+                <option value="Residence Permit">{t('Residence Permit')}</option>
+                <option value="Tourist Visa">{t('Tourist Visa')}</option>
               </select>
             </label>
-            <label>Request type<input value={draft.requestType} onChange={(event) => setDraft({ ...draft, requestType: event.target.value })} required /></label>
-            <label>Preferred currency<select value={draft.currency} onChange={(event) => setDraft({ ...draft, currency: event.target.value as Currency })}>
+            <label>{t('Request type')}<input value={draft.requestType} onChange={(event) => setDraft({ ...draft, requestType: event.target.value })} required /></label>
+            <label>{t('Preferred currency')}<select value={draft.currency} onChange={(event) => setDraft({ ...draft, currency: event.target.value as Currency })}>
               <option>KZT</option>
               <option>USD</option>
               <option>EUR</option>
@@ -794,11 +853,11 @@ function AddCustomer({ onClose, onAdd, nextId }: { onClose: () => void; onAdd: (
             </select>
             </label>
             <label>Login or username<input type="text" value={draft.email} onChange={(event) => setDraft({ ...draft, email: event.target.value })} required /></label>
-            <label>Temporary password<input value={draft.password} onChange={(event) => setDraft({ ...draft, password: event.target.value })} required /></label>
+            <label>{t('Temporary password')}<input value={draft.password} onChange={(event) => setDraft({ ...draft, password: event.target.value })} required /></label>
           </div>
           <div className="modal-actions">
-            <button type="button" className="secondary" onClick={onClose}>Cancel</button>
-            <button className="primary" type="submit">Create customer</button>
+            <button type="button" className="secondary" onClick={onClose}>{t('Cancel')}</button>
+            <button className="primary" type="submit">{t('Create customer')}</button>
           </div>
         </form>
       </section>

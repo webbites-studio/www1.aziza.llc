@@ -163,6 +163,26 @@ main {
   gap: 18px;
 }
 
+.language-select {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.language-select span {
+  text-transform: uppercase;
+  letter-spacing: .7px;
+}
+
+.language-select select {
+  min-width: 94px;
+  padding: 7px 22px 7px 8px;
+  font-size: 10px;
+}
+
 .secure {
   display: flex;
   gap: 6px;
