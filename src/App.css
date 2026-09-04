@@ -183,7 +183,7 @@ main {
 
 .primary,
 .secondary,
-.upload-button {
+.done-button {
   min-height: 40px;
   padding: 0 16px;
   display: inline-flex;
@@ -213,7 +213,7 @@ main {
 
 .primary svg,
 .secondary svg,
-.upload-button svg {
+.done-button svg {
   width: 16px;
 }
 
@@ -297,11 +297,11 @@ main {
 
 .table-row {
   width: 100%;
-  min-width: 780px;
+  min-width: 930px;
   min-height: 78px;
   padding: 12px 22px;
   display: grid;
-  grid-template-columns: 1.6fr 1.4fr .8fr 1fr 25px;
+  grid-template-columns: 1.5fr 1.25fr .75fr 1.1fr .9fr 25px;
   align-items: center;
   gap: 18px;
   color: var(--ink);
@@ -409,7 +409,7 @@ button.table-row:hover {
 .profile-strip dl {
   margin: 0;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 18px;
 }
 
@@ -425,6 +425,16 @@ button.table-row:hover {
   margin: 0;
   font-size: 11px;
   font-weight: 600;
+}
+
+.profile-strip dd input {
+  width: 100%;
+  min-width: 0;
+  padding: 4px 5px;
+  color: var(--ink);
+  background: #fff;
+  border: 1px solid #cbd8ce;
+  font: 600 10px 'DM Sans', sans-serif;
 }
 
 .overview-grid {
@@ -552,6 +562,17 @@ select:focus {
   border-bottom: 1px solid #eaede8;
 }
 
+.document-row.missing {
+  background: #fff4f2;
+  border-left: 3px solid #c65345;
+}
+
+.document-row.uploaded,
+.document-row.approved {
+  background: #f1f8f2;
+  border-left: 3px solid var(--green);
+}
+
 .file-icon {
   width: 36px;
   height: 40px;
@@ -561,13 +582,18 @@ select:focus {
   background: #ecefeb;
 }
 
+.file-icon.missing {
+  color: #c65345;
+  background: #f7e3df;
+}
+
 .file-icon svg {
   width: 17px;
 }
 
 .file-icon.uploaded {
-  color: #a75341;
-  background: #f4e2dc;
+  color: var(--green);
+  background: var(--green-light);
 }
 
 .file-icon.approved {
@@ -591,6 +617,9 @@ select:focus {
 }
 
 .status {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   font-size: 9px;
   font-weight: 600;
   text-transform: uppercase;
@@ -601,8 +630,23 @@ select:focus {
   color: #8b7367;
 }
 
+.status.missing svg {
+  width: 14px;
+  height: 14px;
+  color: #c65345;
+  stroke-width: 3;
+}
+
+.status.uploaded svg,
+.status.approved svg {
+  width: 14px;
+  height: 14px;
+  color: var(--green);
+  stroke-width: 3;
+}
+
 .status.uploaded {
-  color: #ba5b45;
+  color: var(--green);
 }
 
 .status.approved {
@@ -615,16 +659,30 @@ select:focus {
   gap: 5px;
 }
 
-.upload-button {
-  min-height: 34px;
-  padding: 0 11px;
-  color: var(--green);
-  border: 1px solid #cad4cf;
+.status-toggle {
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  display: inline-grid;
+  place-items: center;
+  background: #fff;
+  border-radius: 4px;
   cursor: pointer;
 }
 
-.upload-button input {
-  display: none;
+.status-toggle.missing {
+  color: #c65345;
+  border: 1px solid #e2b8b0;
+}
+
+.status-toggle.uploaded,
+.status-toggle.approved {
+  color: var(--green);
+  border: 1px solid #cad4cf;
+}
+
+.status-toggle svg {
+  width: 17px;
 }
 
 .two-column {
@@ -714,6 +772,114 @@ select:focus {
   font-size: 10px;
 }
 
+
+.calendar-controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.calendar-controls button {
+  padding: 8px 11px;
+  color: var(--muted);
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.calendar-controls button.active {
+  color: #fff;
+  background: var(--green);
+  border-color: var(--green);
+}
+
+.calendar-period {
+  display: block;
+  margin-top: 8px;
+  color: var(--green);
+  font: 600 18px 'Newsreader', serif;
+}
+
+.calendar-grid {
+  padding: 0 24px 24px;
+  display: grid;
+  gap: 1px;
+  background: var(--line);
+}
+
+.calendar-grid.month {
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+
+.calendar-grid.week {
+  grid-template-columns: repeat(7, minmax(120px, 1fr));
+  overflow-x: auto;
+}
+
+.calendar-grid.day {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.calendar-weekday {
+  padding: 9px 10px;
+  color: var(--muted);
+  background: #f4f6f2;
+  font-size: 9px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.calendar-day {
+  min-height: 112px;
+  padding: 10px;
+  background: var(--paper);
+}
+
+.calendar-grid.week .calendar-day,
+.calendar-grid.day .calendar-day {
+  min-height: 260px;
+}
+
+.calendar-day>strong {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--ink);
+  font-size: 11px;
+}
+
+.calendar-appointment {
+  margin-top: 5px;
+  padding: 6px 7px;
+  background: #e5eee7;
+  border-left: 2px solid var(--green);
+  font-size: 9px;
+}
+
+.calendar-appointment time,
+.calendar-appointment b,
+.calendar-appointment small {
+  display: block;
+}
+
+.calendar-appointment time {
+  color: var(--coral);
+  font-size: 8px;
+  font-weight: 600;
+}
+
+.calendar-appointment b {
+  margin-top: 3px;
+  line-height: 1.3;
+}
+
+.calendar-appointment small {
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 8px;
+}
+
 .form-panel {
   padding: 24px;
 }
@@ -787,6 +953,36 @@ label {
   display: block;
   color: var(--muted);
   font: 400 9px 'DM Sans', sans-serif;
+}
+
+.balance-list {
+  margin: 0 24px 24px;
+  border-top: 1px solid var(--line);
+}
+
+.balance-list>div {
+  padding: 12px 0;
+  display: flex;
+  justify-content: space-between;
+  color: var(--muted);
+  font-size: 12px;
+  border-bottom: 1px solid var(--line);
+}
+
+.balance-list strong {
+  color: var(--ink);
+  font-size: 13px;
+}
+
+.balance-list>div:last-child strong {
+  color: var(--coral);
+  font-size: 19px;
+}
+
+.balance-list>div:last-child span {
+  align-self: center;
+  font-size: 14px;
+  font-weight: 600;
 }
 
 .quote-note {
@@ -878,7 +1074,7 @@ label {
   line-height: 1.5;
 }
 
-.guide-grid button {
+.guide-grid a {
   padding: 0;
   display: flex;
   align-items: center;
@@ -888,10 +1084,85 @@ label {
   border: 0;
   font-size: 10px;
   font-weight: 600;
+  text-decoration: none;
 }
 
-.guide-grid button svg {
+.guide-grid a svg {
   width: 14px;
+}
+
+.guide-subsection {
+  margin-top: 42px;
+}
+
+.guide-subsection-head {
+  margin-bottom: 22px;
+}
+
+.guide-subsection-head h2 {
+  margin: 5px 0 0;
+  font: 600 25px 'Newsreader', serif;
+}
+
+.itinerary {
+  margin-top: 42px;
+  padding: 28px 0 4px;
+  border-top: 1px solid var(--line);
+}
+
+.itinerary-head h2 {
+  margin: 5px 0 4px;
+  font: 600 25px 'Newsreader', serif;
+}
+
+.itinerary-head p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.itinerary-grid {
+  margin-top: 22px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.itinerary-grid article {
+  overflow: hidden;
+  min-height: 190px;
+  padding: 0 18px 18px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+}
+
+.itinerary-grid img {
+  width: calc(100% + 36px);
+  height: 210px;
+  margin: 0 -18px 16px;
+  display: block;
+  object-fit: cover;
+}
+
+.itinerary-grid article>span {
+  color: var(--coral);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.itinerary-grid h3 {
+  margin: 8px 0 12px;
+  font: 600 21px 'Newsreader', serif;
+}
+
+.itinerary-grid ul {
+  margin: 0;
+  padding-left: 15px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.7;
 }
 
 .modal-backdrop {
@@ -1066,6 +1337,30 @@ label {
   text-align: center;
 }
 
+@media (max-width: 1180px) and (min-width: 981px) {
+  .app-shell {
+    grid-template-columns: 220px 1fr;
+  }
+
+  .content {
+    padding: 30px 28px 50px;
+  }
+
+  .topbar {
+    padding: 22px 28px;
+  }
+
+  .profile-strip {
+    grid-template-columns: 200px 1fr;
+    gap: 18px;
+  }
+
+  .profile-strip dl {
+    grid-template-columns: repeat(3, 1fr);
+    row-gap: 14px;
+  }
+}
+
 @media (max-width: 980px) {
   .app-shell {
     grid-template-columns: 1fr;
@@ -1153,6 +1448,10 @@ label {
     flex-direction: column;
   }
 
+  .calendar-controls {
+    flex-wrap: wrap;
+  }
+
   .search {
     width: 100%;
   }
@@ -1195,7 +1494,7 @@ label {
     grid-column: 2 / -1;
   }
 
-  .upload-button {
+  .status-toggle {
     flex: 1;
   }
 
@@ -1218,6 +1517,10 @@ label {
 
   .guide-grid img {
     height: 230px;
+  }
+
+  .itinerary-grid {
+    grid-template-columns: 1fr;
   }
 
   .form-grid {

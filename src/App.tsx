@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
-import type { ChangeEvent, FormEvent } from 'react'
+import type { FormEvent } from 'react'
 import {
-  ArrowLeft, CalendarDays, Check, ChevronRight, CircleDollarSign, Download,
+  ArrowLeft, CalendarDays, Check, ChevronRight, CircleDollarSign,
   Eye, FileText, LayoutDashboard, LogOut, MapPinned, Menu, Plus, Search,
-  ShieldCheck, Upload, Users, X,
+  ShieldCheck, Users, X,
 } from 'lucide-react'
 import './App.css'
 
@@ -46,12 +46,15 @@ type Customer = {
   progress: number;
   documents: DocumentItem[];
   schedule: ScheduleItem[];
-  services: ServiceItem[]
+  services: ServiceItem[];
+  arrivalDate?: string;
+  departureDate?: string;
+  paid?: number
 }
 
 const initialCustomers: Customer[] = [
   {
-    id: 1, firstName: 'Elena', lastName: 'Volkova', dob: '1992-04-18',
+    id: 1, firstName: 'Elena', lastName: 'Volkova', dob: '1992-04-18', arrivalDate: '2026-08-11', departureDate: '2026-08-15',
     visaType: 'Digital Nomad Visa', requestType: 'Relocation assistance',
     email: 'elena@example.com', password: 'welcome123', currency: 'EUR', progress: 68,
     documents: [
@@ -76,7 +79,7 @@ const initialCustomers: Customer[] = [
     ],
   },
   {
-    id: 2, firstName: 'Daniel', lastName: 'Meyer', dob: '1988-11-02', visaType: 'Work Visa',
+    id: 2, firstName: 'Daniel', lastName: 'Meyer', dob: '1988-11-02', arrivalDate: '2026-08-13', departureDate: '2026-08-16', visaType: 'Work Visa',
     requestType: 'Company formation', email: 'daniel@example.com', password: 'welcome123', currency: 'USD', progress: 42,
     documents: [
       { id: 1, name: 'Passport scan', category: 'Required', status: 'Uploaded', fileName: 'passport-daniel.jpg', uploadedAt: 'Aug 9, 2026' },
@@ -88,7 +91,7 @@ const initialCustomers: Customer[] = [
     services: [{ id: 1, name: 'Company registration', price: 650000 }, { id: 2, name: 'Airport transfer', price: 75000 }],
   },
   {
-    id: 3, firstName: 'Sofia', lastName: 'Petrova', dob: '1995-07-21', visaType: 'Residence Permit',
+    id: 3, firstName: 'Sofia', lastName: 'Petrova', dob: '1995-07-21', arrivalDate: '2026-08-14', departureDate: '2026-08-17', visaType: 'Residence Permit',
     requestType: 'Full service package', email: 'sofia@example.com', password: 'welcome123', currency: 'RUB', progress: 84,
     documents: [
       { id: 1, name: 'Passport scan', category: 'Required', status: 'Approved', fileName: 'passport-sofia.pdf' },
@@ -101,14 +104,60 @@ const initialCustomers: Customer[] = [
   },
 ]
 
-const guideItems = [
-  { type: 'Area', name: 'Esil District', note: 'Modern architecture, riverside walks and central city life', image: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=900&q=80' },
-  { type: 'Restaurant', name: 'Qazaq Gourmet', note: 'Contemporary Kazakh cuisine with traditional hospitality', image: 'https://images.unsplash.com/photo-1552566626-52f8b828add9?auto=format&fit=crop&w=900&q=80' },
-  { type: 'Attraction', name: 'Baiterek Monument', note: 'Astana’s landmark observation tower and city panorama', image: 'https://images.unsplash.com/photo-1487958449943-2429e8be8625?auto=format&fit=crop&w=900&q=80' },
+const hotelItems = [
+  { type: 'Hotel', name: 'Altyn Eco Park', note: 'A peaceful stay surrounded by green space in Astana', image: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e0/Trip_to_Astana_%282015-10-24%29_02.jpg/960px-Trip_to_Astana_%282015-10-24%29_02.jpg' },
+  { type: 'Hotel', name: 'Sheraton Astana', note: 'A central luxury hotel near the city’s key destinations', image: '/sheraton-astana.jpg', link: 'https://www.marriott.com/en-us/hotels/tsesi-sheraton-astana-hotel/overview/' },
+  { type: 'Hotel', name: 'Royal Park Hotel and Spa', note: 'Comfortable rooms and spa facilities for a restorative stay', image: 'https://lh3.googleusercontent.com/sitesv/AG8ngQUb7UyqUdqXdhx4FG1kmeNCdXANU6WDtRNa3N5sphaXxklUFetgc_EvBHP6q0o8WrpB99LL_hums3-2H2s1BJSVxHC422_lFOtIL87TVZBUM-lbKzESPudKqpr4zqXdzFsp87SOo8ZqN6BWUceihAQLlRreexKpRRMCa0j5yFQmV3P57B6KZh4Iq3y3=w1200', link: 'https://sites.google.com/view/royal-park-hotel-spa/' },
 ]
-const serviceOptions = ['Passport preparation', 'Fingerprint preparation', 'Bank account assistance', 'Airport transfer', 'Salon appointment', 'Translation service', 'Company registration']
-const rates: Record<Currency, number> = { KZT: 1, USD: 0.002, EUR: 0.0018, RUB: 0.16 }
+const serviceOptions = ['Passport preparation', 'Fingerprint preparation', 'Bank account assistance', 'Airport transfer', 'Salon appointment', 'Translation services', 'BIN number', 'Personal Banking', 'Business Banking', 'Phone line', 'Company registration', 'Other']
+const appointmentOptions = ['Migration Service appointment', 'Bank appointment', 'Welcome lunch', 'Bank follow-up', 'Accountant consultation', 'Legal consultation', 'Residence application', 'Airport transfer', 'Hotel check-in', 'Other']
+const documentOptions = ['Passport scan', 'Proof of income', 'Passport photo', 'Employment contract', 'Birth certificate', 'Flight ticket', 'Hotel booking', 'Other']
+const fallbackRates: Record<Currency, number> = { KZT: 1, USD: 0.002, EUR: 0.0018, RUB: 0.16 }
 const currencySymbols: Record<Currency, string> = { KZT: '₸', USD: '$', EUR: '€', RUB: '₽' }
+const itinerary = [
+  { day: 'Day 1', title: 'Discover central Astana', image: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ee/Trip_to_Astana_%282015-10-24%29_01.jpg/960px-Trip_to_Astana_%282015-10-24%29_01.jpg', stops: ['Check in and settle into your hotel', 'Walk along Nurzhol Boulevard to the Baiterek Monument', 'Enjoy dinner in the Esil District'] },
+  { day: 'Day 2', title: 'Culture and city landmarks', image: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e0/Trip_to_Astana_%282015-10-24%29_02.jpg/960px-Trip_to_Astana_%282015-10-24%29_02.jpg', stops: ['Visit the National Museum of the Republic of Kazakhstan', 'See the Palace of Peace and Reconciliation', 'Take an evening walk around the EXPO 2017 site'] },
+  { day: 'Day 3', title: 'Relax, explore and depart', image: 'https://lh3.googleusercontent.com/sitesv/AG8ngQUb7UyqUdqXdhx4FG1kmeNCdXANU6WDtRNa3N5sphaXxklUFetgc_EvBHP6q0o8WrpB99LL_hums3-2H2s1BJSVxHC422_lFOtIL87TVZBUM-lbKzESPudKqpr4zqXdzFsp87SOo8ZqN6BWUceihAQLlRreexKpRRMCa0j5yFQmV3P57B6KZh4Iq3y3=w1200', stops: ['Have a relaxed morning at the hotel or spa', 'Explore the Presidential Park and enjoy a final local meal', 'Pick up gifts before departing Astana or continuing your journey'] },
+]
+ 
+function getMonthDates(date: string) {
+  const start = new Date(`${date.slice(0, 7)}-01T00:00`)
+  const mondayOffset = (start.getDay() + 6) % 7
+  start.setDate(start.getDate() - mondayOffset)
+  return Array.from({ length: 42 }, (_, index) => formatDateKey(new Date(start.getTime() + index * 86400000)))
+}
+
+function getWeekDates(date: string) {
+  const start = new Date(`${date}T00:00`)
+  start.setDate(start.getDate() - ((start.getDay() + 6) % 7))
+  return Array.from({ length: 7 }, (_, index) => formatDateKey(new Date(start.getTime() + index * 86400000)))
+}
+
+function formatDateKey(date: Date) {
+  return date.toISOString().slice(0, 10)
+}
+
+function formatCalendarDate(date: string, mode: CalendarMode) {
+  const calendarDate = new Date(`${date}T00:00`)
+  return mode === 'month'
+    ? calendarDate.getDate()
+    : calendarDate.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })
+}
+
+function formatCalendarPeriod(date: string, mode: CalendarMode) {
+  const start = new Date(`${date}T00:00`)
+  if (mode === 'month') return start.toLocaleDateString(undefined, { month: 'long', year: 'numeric' })
+  if (mode === 'day') return start.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })
+  const end = new Date(start.getTime() + 6 * 86400000)
+  return `${start.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })} - ${end.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}`
+}
+
+function shiftCalendarDate(date: string, mode: CalendarMode, direction: number) {
+  const days = mode === 'month' ? 31 : mode === 'week' ? 7 : 1
+  return formatDateKey(new Date(new Date(`${date}T00:00`).getTime() + direction * days * 86400000))
+}
+
+function formatTime(time: string) { return new Date(`2026-01-01T${time}`).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' }) }
 
 function App() {
   const [customers, setCustomers] = useState<Customer[]>(() => {
@@ -167,10 +216,10 @@ function App() {
               ? <Customers customers={customers} onOpen={(id) => { setSelectedId(id); setView('documents') }} />
               : <>
                 {isAdmin && <button className="back-link" onClick={() => setView('overview')}><ArrowLeft />All customers</button>}
-                <ProfileStrip customer={customer} />
+                <ProfileStrip customer={customer} isAdmin={isAdmin} onChange={updateCustomer} />
                 {view === 'overview' && <CustomerOverview customer={customer} onNavigate={setView} />}
                 {view === 'documents' && <Documents customer={customer} isAdmin={isAdmin} onChange={updateCustomer} />}
-                {view === 'schedule' && <Schedule customer={customer} isAdmin={isAdmin} onChange={updateCustomer} />}
+                {view === 'schedule' && <Schedule customer={customer} customers={customers} isAdmin={isAdmin} onChange={updateCustomer} />}
                 {view === 'pricing' && <Pricing customer={customer} isAdmin={isAdmin} onChange={updateCustomer} />}
                 {view === 'guide' && <Guide />}
               </>
@@ -211,7 +260,7 @@ function Login({ customers, onLogin }: { customers: Customer[]; onLogin: (sessio
           <button className={role === 'admin' ? 'active' : ''} onClick={() => switchRole('admin')}>Administrator</button>
         </div>
         <form onSubmit={submit}>
-          <label>Email address<input type="email" value={email} onChange={(event) => setEmail(event.target.value)} required /></label>
+          <label>Login or username<input type="text" value={email} onChange={(event) => setEmail(event.target.value)} required /></label>
           <label>Password<input type="password" value={password} onChange={(event) => setPassword(event.target.value)} required /></label>
           {error && <div className="form-error">{error}</div>}
           <button className="primary login-submit" type="submit">Sign in <ChevronRight /></button>
@@ -233,7 +282,7 @@ function Customers({ customers, onOpen }: { customers: Customer[]; onOpen: (id: 
         <label className="search"><Search /><input placeholder="Search customers" value={query} onChange={(event) => setQuery(event.target.value)} /></label>
       </div>
       <div className="customer-table">
-        <div className="table-row table-heading"><span>Customer</span><span>Visa & request</span><span>Documents</span><span>Progress</span><span></span></div>
+        <div className="table-row table-heading"><span>Customer</span><span>Visa & request</span><span>Documents</span><span>Arrival & departure</span><span>Progress</span><span></span></div>
         {filtered.map((item) => {
           const uploaded = item.documents.filter((document) => document.status !== 'Missing').length;
           return (
@@ -244,6 +293,7 @@ function Customers({ customers, onOpen }: { customers: Customer[]; onOpen: (id: 
               </span>
               <span><strong>{item.visaType}</strong><small>{item.requestType}</small></span>
               <span><strong>{uploaded} / {item.documents.length}</strong><small>received</small></span>
+              <span><strong>{formatTravelDate(item.arrivalDate)}</strong><small>to {formatTravelDate(item.departureDate)}</small></span>
               <span className="progress-cell"><span><i style={{ width: `${item.progress}%` }} /></span><small>{item.progress}%</small></span>
               <span><ChevronRight /></span>
             </button>
@@ -254,7 +304,7 @@ function Customers({ customers, onOpen }: { customers: Customer[]; onOpen: (id: 
   )
 }
 
-function ProfileStrip({ customer }: { customer: Customer }) {
+function ProfileStrip({ customer, isAdmin, onChange }: { customer: Customer; isAdmin: boolean; onChange: (customer: Customer) => void }) {
   return (
     <div className="profile-strip">
       <div className="profile-person">
@@ -268,12 +318,6 @@ function ProfileStrip({ customer }: { customer: Customer }) {
         </div>
       </div>
       <dl>
-        <div>
-          <dt>Date of birth
-          </dt>
-          <dd>{new Date(`${customer.dob}T00:00`).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
-          </dd>
-        </div>
         <div>
           <dt>Visa type
           </dt>
@@ -290,6 +334,22 @@ function ProfileStrip({ customer }: { customer: Customer }) {
           <dt>Overall progress
           </dt>
           <dd>{customer.progress}%
+          </dd>
+        </div>
+        <div>
+          <dt>Arrival
+          </dt>
+          <dd>{isAdmin
+            ? <input aria-label="Arrival date" type="date" value={customer.arrivalDate ?? ''} onChange={(event) => onChange({ ...customer, arrivalDate: event.target.value })} />
+            : formatTravelDate(customer.arrivalDate)}
+          </dd>
+        </div>
+        <div>
+          <dt>Departure
+          </dt>
+          <dd>{isAdmin
+            ? <input aria-label="Departure date" type="date" value={customer.departureDate ?? ''} onChange={(event) => onChange({ ...customer, departureDate: event.target.value })} />
+            : formatTravelDate(customer.departureDate)}
           </dd>
         </div>
       </dl>
@@ -350,47 +410,48 @@ function CustomerOverview({ customer, onNavigate }: { customer: Customer; onNavi
 
 function Documents({ customer, isAdmin, onChange }: { customer: Customer; isAdmin: boolean; onChange: (customer: Customer) => void }) {
   const [newName, setNewName] = useState('')
-  function upload(documentId: number, event: ChangeEvent<HTMLInputElement>) {
-    const file = event.target.files?.[0]; if (!file) return
-    if (!['application/pdf', 'image/jpeg'].includes(file.type)) return alert('Please choose a PDF, JPEG or JPG file.')
-    const reader = new FileReader()
-    reader.onload = () => onChange({
+  const [documentChoice, setDocumentChoice] = useState('')
+  function markDone(documentId: number) {
+    onChange({
       ...customer,
       documents: customer.documents.map((item) => item.id === documentId
         ? {
           ...item,
           status: 'Uploaded',
-          fileName: file.name,
-          dataUrl: String(reader.result),
           uploadedAt: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
         }
         : item)
     })
-    reader.readAsDataURL(file)
   }
   function addDocument(event: FormEvent) {
     event.preventDefault();
     if (!newName.trim()) return
-    onChange({ ...customer, documents: [...customer.documents, { id: Date.now(), name: newName.trim(), category: 'Required', status: 'Missing' }] });
+    const category = ['Flight ticket', 'Hotel booking'].includes(documentChoice) ? 'Travel' : 'Required'
+    onChange({ ...customer, documents: [...customer.documents, { id: Date.now(), name: newName.trim(), category, status: 'Missing' }] });
     setNewName('')
+    setDocumentChoice('')
   }
   return (
     <section className="panel">
       <div className="panel-head">
         <div>
           <h2>Document center</h2>
-          <p>PDF, JPEG or JPG files up to your browser storage limit.</p>
+          <p>Mark each requested document complete when you are ready.</p>
         </div>
         {isAdmin &&
           <form className="inline-form" onSubmit={addDocument}>
-            <input placeholder="New required document" value={newName} onChange={(event) => setNewName(event.target.value)} />
+            <select aria-label="Document request" value={documentChoice} onChange={(event) => { setDocumentChoice(event.target.value); setNewName(event.target.value === 'Other' ? '' : event.target.value) }} required>
+              <option value="" disabled>Select document</option>
+              {documentOptions.map((item) => <option key={item}>{item}</option>)}
+            </select>
+            {documentChoice === 'Other' && <input aria-label="Document name" placeholder="Enter document name" value={newName} onChange={(event) => setNewName(event.target.value)} required />}
             <button className="secondary" type="submit"><Plus />Add request</button>
           </form>
         }
       </div>
       <div className="document-list">
         {customer.documents.map((item) =>
-          <div className="document-row" key={item.id}>
+          <div className={`document-row ${item.status.toLowerCase()}`} key={item.id}>
             <div className={`file-icon ${item.status.toLowerCase()}`}>
               <FileText />
             </div>
@@ -398,22 +459,18 @@ function Documents({ customer, isAdmin, onChange }: { customer: Customer; isAdmi
               <strong>{item.name}</strong>
               <small>{item.fileName ?? `${item.category} document`}{item.uploadedAt ? ` · ${item.uploadedAt}` : ''}</small>
             </div>
-            <span className={`status ${item.status.toLowerCase()}`}>{item.status}</span>
+            {!isAdmin &&
+              <span className={`status ${item.status.toLowerCase()}`} aria-label={item.status}>
+                {item.status === 'Missing' && <X aria-hidden="true" />}
+                {item.status !== 'Missing' && <Check aria-hidden="true" />}
+              </span>
+            }
             <div className="document-actions">
-              {
-                isAdmin && item.status === 'Uploaded' &&
-                <button className="icon-button" title="Approve" onClick={() => onChange({ ...customer, documents: customer.documents.map((document) => document.id === item.id ? { ...document, status: 'Approved' } : document) })}>
-                  <Check />
+              {isAdmin &&
+                <button className={`status-toggle ${item.status.toLowerCase()}`} aria-label={item.status === 'Missing' ? 'Mark document complete' : 'Document complete'} title={item.status === 'Missing' ? 'Mark document complete' : 'Document complete'} onClick={() => item.status === 'Missing' && markDone(item.id)}>
+                  {item.status === 'Missing' ? <X /> : <ChevronRight />}
                 </button>
               }
-              {
-                item.fileName && <a className="icon-button" href={item.dataUrl ?? '#'} download={item.fileName} title="Download"><Download /></a>
-              }
-              <label className="upload-button">
-                <Upload />
-                <span>{item.status === 'Missing' ? 'Upload' : 'Replace'}</span>
-                <input type="file" accept=".pdf,.jpeg,.jpg,application/pdf,image/jpeg" onChange={(event) => upload(item.id, event)} />
-              </label>
             </div>
           </div>
         )}
@@ -422,8 +479,44 @@ function Documents({ customer, isAdmin, onChange }: { customer: Customer; isAdmi
   )
 }
 
-function Schedule({ customer, isAdmin, onChange }: { customer: Customer; isAdmin: boolean; onChange: (customer: Customer) => void }) {
+type CalendarMode = 'month' | 'week' | 'day'
+
+function AdminCalendar({ customers }: { customers: Customer[] }) {
+  const firstAppointment = customers.flatMap((item) => item.schedule).map((item) => item.date).sort()[0] ?? '2026-08-12'
+  const [mode, setMode] = useState<CalendarMode>('month')
+  const [anchorDate, setAnchorDate] = useState(firstAppointment)
+  const appointments = customers.flatMap((customerItem) => customerItem.schedule.map((scheduleItem) => ({ ...scheduleItem, customerName: `${customerItem.firstName} ${customerItem.lastName}` })))
+  const dates = mode === 'month' ? getMonthDates(anchorDate) : mode === 'week' ? getWeekDates(anchorDate) : [anchorDate]
+
+  return (
+    <section className="panel admin-calendar">
+      <div className="panel-head">
+        <div><h2>All customer schedules</h2><p>Review appointments across every customer.</p><strong className="calendar-period">{formatCalendarPeriod(anchorDate, mode)}</strong></div>
+        <div className="calendar-controls">
+          <button className="calendar-nav" onClick={() => setAnchorDate(shiftCalendarDate(anchorDate, mode, -1))}>Previous</button>
+          {(['month', 'week', 'day'] as CalendarMode[]).map((calendarMode) =>
+            <button key={calendarMode} className={`calendar-mode ${mode === calendarMode ? 'active' : ''}`} onClick={() => setMode(calendarMode)}>{calendarMode[0].toUpperCase() + calendarMode.slice(1)}</button>
+          )}
+          <button className="calendar-nav" onClick={() => setAnchorDate(shiftCalendarDate(anchorDate, mode, 1))}>Next</button>
+        </div>
+      </div>
+      <div className={`calendar-grid ${mode}`}>
+        {mode === 'month' && ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day) => <span className="calendar-weekday" key={day}>{day}</span>)}
+        {dates.map((date) => {
+          const dayAppointments = appointments.filter((item) => item.date === date).sort((a, b) => a.time.localeCompare(b.time))
+          return <div className="calendar-day" key={date}>
+            <strong>{formatCalendarDate(date, mode)}</strong>
+            {dayAppointments.map((item) => <div className="calendar-appointment" key={`${item.customerName}-${item.id}`}><time>{formatTime(item.time)}</time><b>{item.title}</b><small>{item.customerName}</small></div>)}
+          </div>
+        })}
+      </div>
+    </section>
+  )
+}
+
+function Schedule({ customer, customers, isAdmin, onChange }: { customer: Customer; customers: Customer[]; isAdmin: boolean; onChange: (customer: Customer) => void }) {
   const [draft, setDraft] = useState({ date: '2026-08-12', time: '12:00', title: '', location: '' })
+  const [appointmentChoice, setAppointmentChoice] = useState('')
   const grouped = customer.schedule.reduce<Record<string, ScheduleItem[]>>((groups, item) => ({ ...groups, [item.date]: [...(groups[item.date] ?? []), item] }), {})
 
   function add(event: FormEvent) {
@@ -431,15 +524,16 @@ function Schedule({ customer, isAdmin, onChange }: { customer: Customer; isAdmin
     if (!draft.title) return;
     onChange({ ...customer, schedule: [...customer.schedule, { id: Date.now(), ...draft }] });
     setDraft({ ...draft, title: '', location: '' })
+    setAppointmentChoice('')
   }
 
   return (
     <div className="two-column">
-      <section className="panel">
-        <div className="panel-head">
-          <div><h2>Journey schedule</h2><p>Your appointments and plans, day by day.</p></div>
-        </div>
-        <div className="timeline">
+      {isAdmin ? <AdminCalendar customers={customers} /> : <section className="panel">
+          <div className="panel-head">
+            <div><h2>Journey schedule</h2><p>Your appointments and plans, day by day.</p></div>
+          </div>
+          <div className="timeline">
           {Object.entries(grouped).sort(([a], [b]) => a.localeCompare(b)).map(([date, items]) =>
             <div className="timeline-day" key={date}>
               <div className="date-block">
@@ -458,8 +552,8 @@ function Schedule({ customer, isAdmin, onChange }: { customer: Customer; isAdmin
               </div>
             </div>)
           }
-        </div>
-      </section>
+          </div>
+        </section>}
       {isAdmin &&
         <section className="panel form-panel">
           <h2>Add to schedule
@@ -474,11 +568,16 @@ function Schedule({ customer, isAdmin, onChange }: { customer: Customer; isAdmin
               <input type="time" value={draft.time} onChange={(event) => setDraft({ ...draft, time: event.target.value })} required />
             </label>
             <label>Appointment
-              <input value={draft.title} onChange={(event) => setDraft({ ...draft, title: event.target.value })} placeholder="e.g. Bank appointment" required />
+              <select value={appointmentChoice} onChange={(event) => { setAppointmentChoice(event.target.value); setDraft({ ...draft, title: event.target.value === 'Other' ? '' : event.target.value }) }} required>
+                <option value="" disabled>Select appointment</option>
+                {appointmentOptions.map((item) => <option key={item}>{item}</option>)}
+              </select>
             </label>
-            <label>Location
-              <input value={draft.location} onChange={(event) => setDraft({ ...draft, location: event.target.value })} placeholder="Address or meeting place" />
-            </label>
+            {appointmentChoice === 'Other' &&
+              <label>Appointment name
+                <input value={draft.title} onChange={(event) => setDraft({ ...draft, title: event.target.value })} placeholder="Enter appointment name" required />
+              </label>
+            }
             <button className="primary" type="submit"><Plus />Add appointment</button>
           </form>
         </section>
@@ -488,21 +587,59 @@ function Schedule({ customer, isAdmin, onChange }: { customer: Customer; isAdmin
 
 function Pricing({ customer, isAdmin, onChange }: { customer: Customer; isAdmin: boolean; onChange: (customer: Customer) => void }) {
   const [service, setService] = useState(serviceOptions[0]);
+  const [otherService, setOtherService] = useState('');
   const [price, setPrice] = useState('');
+  const [paidInput, setPaidInput] = useState(String(customer.paid ?? ''))
+  const [rates, setRates] = useState<Record<Currency, number>>(fallbackRates)
+  const [rateDate, setRateDate] = useState('')
   const total = customer.services.reduce((sum, item) => sum + item.price, 0);
+  const paid = Math.max(0, customer.paid ?? 0)
+  const outstanding = Math.max(0, total - paid)
+
+  useEffect(() => {
+    fetch('https://nationalbank.kz/rss/rates_all.xml')
+      .then((response) => {
+        if (!response.ok) throw new Error('Exchange rates unavailable')
+        return response.text()
+      })
+      .then((xmlText) => {
+        const xml = new DOMParser().parseFromString(xmlText, 'application/xml')
+        const nextRates = { ...fallbackRates }
+        let publishedDate = ''
+        xml.querySelectorAll('item').forEach((item) => {
+          const currency = item.querySelector('title')?.textContent?.trim() as Currency
+          const rateInKzt = Number(item.querySelector('description')?.textContent)
+          const units = Number(item.querySelector('quant')?.textContent) || 1
+          if (currency in nextRates && rateInKzt > 0) nextRates[currency] = units / rateInKzt
+          publishedDate ||= item.querySelector('pubDate')?.textContent?.trim() ?? ''
+        })
+        setRates(nextRates)
+        setRateDate(publishedDate)
+      })
+      .catch(() => setRateDate('offline fallback'))
+  }, [])
 
   function add(event: FormEvent) {
     event.preventDefault();
-    if (!price || Number(price) <= 0) return;
-    onChange({ ...customer, services: [...customer.services, { id: Date.now(), name: service, price: Number(price) }] });
+    const serviceName = service === 'Other' ? otherService.trim() : service
+    if (!serviceName || !price || Number(price) <= 0) return;
+    onChange({ ...customer, services: [...customer.services, { id: Date.now(), name: serviceName, price: Number(price) }] });
     setPrice('')
+    setOtherService('')
+  }
+
+  function savePayment(event: FormEvent) {
+    event.preventDefault()
+    const paidAmount = Number(paidInput)
+    if (!Number.isFinite(paidAmount) || paidAmount < 0) return
+    onChange({ ...customer, paid: paidAmount })
   }
 
   return (
     <div className="two-column pricing-layout">
       <section className="panel">
         <div className="panel-head">
-          <div><h2>Services & pricing</h2><p>Base pricing is in Kazakhstan tenge (KZT).</p></div>
+          <div><h2>Services & pricing</h2><p>Base pricing is in Kazakhstan tenge (KZT). National Bank rate: {rateDate || 'loading...'}</p></div>
           <select value={customer.currency} onChange={(event) => onChange({ ...customer, currency: event.target.value as Currency })}>
             <option value="KZT">KZT ₸</option>
             <option value="USD">USD $</option>
@@ -524,21 +661,36 @@ function Pricing({ customer, isAdmin, onChange }: { customer: Customer; isAdmin:
             </small>
           </strong>
         </div>
+        <div className="balance-list">
+          <div><span>Paid</span><strong>₸{paid.toLocaleString()}</strong></div>
+          <div><span>Amount due</span><strong>₸{outstanding.toLocaleString()}</strong></div>
+        </div>
       </section>
       {
         isAdmin
           ? <section className="panel form-panel">
-            <h2>Add service line</h2><p>Choose a standard item or type its price.</p>
+            <h2>Update services and payment</h2><p>Add a service or record the amount already paid.</p>
             <form onSubmit={add}>
               <label>Service
                 <select value={service} onChange={(event) => setService(event.target.value)}>
                   {serviceOptions.map((item) => <option key={item}>{item}</option>)}
                 </select>
               </label>
+              {service === 'Other' &&
+                <label>Service name
+                  <input value={otherService} onChange={(event) => setOtherService(event.target.value)} placeholder="Enter service name" required />
+                </label>
+              }
               <label>Price in KZT
-                <input type="number" min="1" step="1000" value={price} onChange={(event) => setPrice(event.target.value)} placeholder="0" required />
+                <input type="number" step="any" value={price} onChange={(event) => setPrice(event.target.value)} placeholder="0" required />
               </label>
               <button className="primary" type="submit"><Plus />Add to estimate</button>
+            </form>
+            <form onSubmit={savePayment}>
+              <label>Payment received in KZT
+                <input type="number" step="any" min="0" value={paidInput} onChange={(event) => setPaidInput(event.target.value)} placeholder="0" required />
+              </label>
+              <button className="secondary" type="submit">Save payment</button>
             </form>
           </section>
           : <section className="quote-note">
@@ -559,18 +711,41 @@ function Guide() {
           <p>Places selected by your local Aziza coordinator.</p>
         </div>
       </div>
-      <div className="guide-grid">
-        {guideItems.map((item) =>
-          <article key={item.name}>
-            <img src={item.image} alt={item.name} />
-            <div>
-              <span>{item.type}</span>
-              <h3>{item.name}</h3>
-              <p>{item.note}</p>
-              <button aria-label={`View ${item.name}`}><Eye />View details</button>
-            </div>
-          </article>
-        )}
+      <div className="guide-subsection">
+        <div className="guide-subsection-head">
+          <span className="eyebrow">PLACES TO STAY</span>
+          <h2>Hotels for your Astana stay</h2>
+        </div>
+        <div className="guide-grid hotel-grid">
+          {hotelItems.map((item) =>
+            <article key={item.name}>
+              <img src={item.image} alt={item.name} />
+              <div>
+                <span>{item.type}</span>
+                <h3>{item.name}</h3>
+                <p>{item.note}</p>
+                <a href={item.link ?? '#'} target={item.link ? '_blank' : undefined} rel={item.link ? 'noreferrer' : undefined} aria-label={`View ${item.name}`}><Eye />View details</a>
+              </div>
+            </article>
+          )}
+        </div>
+      </div>
+      <div className="itinerary">
+        <div className="itinerary-head">
+          <span className="eyebrow">FOUR DAYS IN ASTANA</span>
+          <h2>A considered city itinerary</h2>
+          <p>A gentle rhythm of landmarks, local food and time to settle in.</p>
+        </div>
+        <div className="itinerary-grid">
+          {itinerary.map((item) =>
+            <article key={item.day}>
+              <img src={item.image} alt={item.title} />
+              <span>{item.day}</span>
+              <h3>{item.title}</h3>
+              <ul>{item.stops.map((stop) => <li key={stop}>{stop}</li>)}</ul>
+            </article>
+          )}
+        </div>
       </div>
     </section>
   )
@@ -602,9 +777,6 @@ function AddCustomer({ onClose, onAdd, nextId }: { onClose: () => void; onAdd: (
             <label>Last name
               <input value={draft.lastName} onChange={(event) => setDraft({ ...draft, lastName: event.target.value })} required />
             </label>
-            <label>Date of birth
-              <input type="date" value={draft.dob} onChange={(event) => setDraft({ ...draft, dob: event.target.value })} required />
-            </label>
             <label>Visa type
               <select value={draft.visaType} onChange={(event) => setDraft({ ...draft, visaType: event.target.value })}>
                 <option>Digital Nomad Visa</option>
@@ -621,7 +793,7 @@ function AddCustomer({ onClose, onAdd, nextId }: { onClose: () => void; onAdd: (
               <option>RUB</option>
             </select>
             </label>
-            <label>Email / login<input type="email" value={draft.email} onChange={(event) => setDraft({ ...draft, email: event.target.value })} required /></label>
+            <label>Login or username<input type="text" value={draft.email} onChange={(event) => setDraft({ ...draft, email: event.target.value })} required /></label>
             <label>Temporary password<input value={draft.password} onChange={(event) => setDraft({ ...draft, password: event.target.value })} required /></label>
           </div>
           <div className="modal-actions">
@@ -635,6 +807,6 @@ function AddCustomer({ onClose, onAdd, nextId }: { onClose: () => void; onAdd: (
 }
 
 function formatDate(date: string) { return new Date(`${date}T00:00`).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) }
-function formatTime(time: string) { return new Date(`2026-01-01T${time}`).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' }) }
+function formatTravelDate(date?: string) { return date ? new Date(`${date}T00:00`).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : 'Not set' }
 
 export default App

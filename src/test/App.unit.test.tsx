@@ -23,7 +23,7 @@ describe('portal login', () => {
 
         await user.click(screen.getByRole('button', { name: 'Administrator' }))
 
-        expect(screen.getByLabelText('Email address')).toHaveValue('admin@aziza.kz')
+        expect(screen.getByLabelText('Login or username')).toHaveValue('admin@aziza.kz')
         expect(screen.getByLabelText('Password')).toHaveValue('admin123')
     })
 })
