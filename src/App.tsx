@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useState } from 'react'
 import type { FormEvent } from 'react'
 import {
   ArrowLeft, CalendarDays, Check, ChevronRight, CircleDollarSign,
-  Eye, FileText, LayoutDashboard, LogOut, MapPinned, Menu, Plus, Search,
+  Eye, FileText, LayoutDashboard, LogOut, MapPinned, Menu, Plus, Search, Trash2,
   ShieldCheck, Users, X,
 } from 'lucide-react'
 import './App.css'
@@ -15,20 +15,20 @@ type Language = 'en' | 'ru' | 'kk'
 const translations: Record<Language, Record<string, string>> = {
   en: {},
   ru: {
-    'Administration': 'Администрирование', 'My journey': 'Мой путь', Customers: 'Клиенты', Overview: 'Обзор', Documents: 'Документы', Schedule: 'Расписание', 'Services & pricing': 'Услуги и цены', 'Local guide': 'Гид по городу', 'Customer management': 'Управление клиентами', 'Welcome back': 'С возвращением', 'Secure portal': 'Защищенный портал', 'Add customer': 'Добавить клиента', 'All customers': 'Все клиенты', 'Document center': 'Центр документов', 'Journey schedule': 'Расписание поездки', 'All customer schedules': 'Расписание всех клиентов', 'Make yourself at home in Astana': 'Чувствуйте себя как дома в Астане', 'Welcome to Astana': 'Добро пожаловать в Астану', 'Sign in to continue your relocation journey.': 'Войдите, чтобы продолжить поездку.', 'Sign in': 'Войти', Customer: 'Клиент', Administrator: 'Администратор', Password: 'Пароль', 'Login or username': 'Логин или имя пользователя', 'Create portal access': 'Создать доступ к порталу', 'Amount due': 'Сумма к оплате', Paid: 'Оплачено', Arrival: 'Прибытие', Departure: 'Отъезд', 'Previous': 'Назад', Next: 'Далее', Month: 'Месяц', Week: 'Неделя', Day: 'День', 'Visa type': 'Тип визы', Request: 'Запрос', 'Overall progress': 'Общий прогресс'
+    'Administration': 'Администрирование', 'My journey': 'Мой путь', Customers: 'Клиенты', Overview: 'Обзор', Documents: 'Документы', Schedule: 'Расписание', 'Services & pricing': 'Услуги и цены', 'Local guide': 'Гид по городу', 'Customer management': 'Управление клиентами', 'Welcome back': 'С возвращением', 'Secure portal': 'Защищенный портал', 'Add customer': 'Добавить клиента', 'All customers': 'Все клиенты', 'Document center': 'Центр документов', 'Journey schedule': 'Расписание поездки', 'All customer schedules': 'Расписание всех клиентов', 'Make yourself at home in Astana': 'Чувствуйте себя как дома в Астане', 'Welcome to Astana': 'Добро пожаловать в Астану', 'Sign in to continue your relocation journey.': 'Войдите, чтобы продолжить поездку.', 'Sign in': 'Войти', Customer: 'Клиент', Administrator: 'Администратор', Password: 'Пароль', 'Login or username': 'Логин или имя пользователя', 'Create portal access': 'Создать доступ к порталу', 'Amount due': 'Сумма к оплате', Paid: 'Оплачено', Arrival: 'Прибытие', Departure: 'Отъезд', 'Previous': 'Назад', Next: 'Далее', Month: 'Месяц', Week: 'Неделя', Day: 'День', 'Visa type': 'Тип визы', Request: 'Запрос', 'Overall progress': 'Общий прогресс', Save: 'Сохранить'
   },
   kk: {
-    'Administration': 'Әкімшілік', 'My journey': 'Менің сапарым', Customers: 'Клиенттер', Overview: 'Шолу', Documents: 'Құжаттар', Schedule: 'Кесте', 'Services & pricing': 'Қызметтер мен бағалар', 'Local guide': 'Қала гиді', 'Customer management': 'Клиенттерді басқару', 'Welcome back': 'Қош келдіңіз', 'Secure portal': 'Қауіпсіз портал', 'Add customer': 'Клиент қосу', 'All customers': 'Барлық клиенттер', 'Document center': 'Құжаттар орталығы', 'Journey schedule': 'Сапар кестесі', 'All customer schedules': 'Барлық клиенттердің кестесі', 'Make yourself at home in Astana': 'Астанада өз үйіңіздегідей болыңыз', 'Welcome to Astana': 'Астанаға қош келдіңіз', 'Sign in to continue your relocation journey.': 'Сапарыңызды жалғастыру үшін кіріңіз.', 'Sign in': 'Кіру', Customer: 'Клиент', Administrator: 'Әкімші', Password: 'Құпиясөз', 'Login or username': 'Логин немесе пайдаланушы аты', 'Create portal access': 'Порталға қолжетімділік жасау', 'Amount due': 'Төленетін сома', Paid: 'Төленді', Arrival: 'Келу', Departure: 'Кету', Previous: 'Алдыңғы', Next: 'Келесі', Month: 'Ай', Week: 'Апта', Day: 'Күн', 'Visa type': 'Виза түрі', Request: 'Сұраныс', 'Overall progress': 'Жалпы барысы'
+    'Administration': 'Әкімшілік', 'My journey': 'Менің сапарым', Customers: 'Клиенттер', Overview: 'Шолу', Documents: 'Құжаттар', Schedule: 'Кесте', 'Services & pricing': 'Қызметтер мен бағалар', 'Local guide': 'Қала гиді', 'Customer management': 'Клиенттерді басқару', 'Welcome back': 'Қош келдіңіз', 'Secure portal': 'Қауіпсіз портал', 'Add customer': 'Клиент қосу', 'All customers': 'Барлық клиенттер', 'Document center': 'Құжаттар орталығы', 'Journey schedule': 'Сапар кестесі', 'All customer schedules': 'Барлық клиенттердің кестесі', 'Make yourself at home in Astana': 'Астанада өз үйіңіздегідей болыңыз', 'Welcome to Astana': 'Астанаға қош келдіңіз', 'Sign in to continue your relocation journey.': 'Сапарыңызды жалғастыру үшін кіріңіз.', 'Sign in': 'Кіру', Customer: 'Клиент', Administrator: 'Әкімші', Password: 'Құпиясөз', 'Login or username': 'Логин немесе пайдаланушы аты', 'Create portal access': 'Порталға қолжетімділік жасау', 'Amount due': 'Төленетін сома', Paid: 'Төленді', Arrival: 'Келу', Departure: 'Кету', Previous: 'Алдыңғы', Next: 'Келесі', Month: 'Ай', Week: 'Апта', Day: 'Күн', 'Visa type': 'Виза түрі', Request: 'Сұраныс', 'Overall progress': 'Жалпы барысы', Save: 'Сақтау'
   },
 }
 
 const extraTranslations: Record<Language, Record<string, string>> = {
   en: {},
   ru: {
-    'Profile created': 'Профиль создан', 'Plan confirmed': 'План подтвержден', 'Documents & appointments': 'Документы и встречи', 'Arrival complete': 'Прибытие завершено', 'Passport scan': 'Скан паспорта', 'Proof of income': 'Подтверждение дохода', 'Passport photo': 'Фото на паспорт', 'Employment contract': 'Трудовой договор', 'Birth certificate': 'Свидетельство о рождении', 'Flight ticket': 'Авиабилет', 'Hotel booking': 'Бронирование отеля', Missing: 'Отсутствует', Uploaded: 'Получено', Approved: 'Одобрено', 'Migration Service appointment': 'Встреча в миграционной службе', 'Bank appointment': 'Встреча в банке', 'Welcome lunch': 'Приветственный обед', 'Bank follow-up': 'Повторная встреча в банке', 'Accountant consultation': 'Консультация бухгалтера', 'Legal consultation': 'Юридическая консультация', 'Residence application': 'Подача на ВНЖ', 'Airport transfer': 'Трансфер из аэропорта', 'Hotel check-in': 'Заселение в отель', 'Passport preparation': 'Подготовка паспорта', 'Fingerprint preparation': 'Подготовка отпечатков', 'Bank account assistance': 'Помощь с банковским счетом', 'Salon appointment': 'Визит в салон', 'Translation services': 'Услуги перевода', 'BIN number': 'БИН', 'Personal Banking': 'Личный банкинг', 'Business Banking': 'Бизнес-банкинг', 'Phone line': 'Телефонная линия', 'Company registration': 'Регистрация компании', 'Other': 'Другое', 'Travel': 'Путешествие', Required: 'Обязательно', 'Select document': 'Выберите документ', 'Add request': 'Добавить запрос', 'Payment received in KZT': 'Полученный платеж в KZT', 'Save payment': 'Сохранить платеж', 'Paid': 'Оплачено', 'Total estimate': 'Итоговая оценка', 'Your relocation path': 'Ваш путь переезда', 'Nothing scheduled': 'Ничего не запланировано'
+    'Profile created': 'Профиль создан', 'Plan confirmed': 'План подтвержден', 'Documents & appointments': 'Документы и встречи', 'Arrival complete': 'Прибытие завершено', 'Passport scan': 'Скан паспорта', 'Proof of income': 'Подтверждение дохода', 'Passport photo': 'Фото на паспорт', 'Employment contract': 'Трудовой договор', 'Birth certificate': 'Свидетельство о рождении', 'Criminal record certification': 'Справка о несудимости', 'Certificate of non-inclusion in the Register of Disqualified Persons': 'Справка об отсутствии в Реестре дисквалифицированных лиц', 'Flight ticket': 'Авиабилет', 'Hotel booking': 'Бронирование отеля', Missing: 'Отсутствует', Uploaded: 'Получено', Approved: 'Одобрено', 'Migration Service appointment': 'Встреча в миграционной службе', 'Bank appointment': 'Встреча в банке', 'Welcome lunch': 'Приветственный обед', 'Bank follow-up': 'Повторная встреча в банке', 'Accountant consultation': 'Консультация бухгалтера', 'Legal consultation': 'Юридическая консультация', 'Residence application': 'Подача на ВНЖ', 'Airport transfer': 'Трансфер из аэропорта', 'Hotel check-in': 'Заселение в отель', 'Passport preparation': 'Подготовка паспорта', 'Fingerprint preparation': 'Подготовка отпечатков', 'Bank account assistance': 'Помощь с банковским счетом', 'Salon appointment': 'Визит в салон', 'Translation services': 'Услуги перевода', 'BIN number': 'БИН', 'Personal Banking': 'Личный банкинг', 'Business Banking': 'Бизнес-банкинг', 'Phone line': 'Телефонная линия', 'Company registration': 'Регистрация компании', 'Other': 'Другое', 'Travel': 'Путешествие', Required: 'Обязательно', 'Select document': 'Выберите документ', 'Add request': 'Добавить запрос', 'Payment received in KZT': 'Полученный платеж в KZT', 'Save payment': 'Сохранить платеж', 'Paid': 'Оплачено', 'Total estimate': 'Итоговая оценка', 'Your relocation path': 'Ваш путь переезда', 'Nothing scheduled': 'Ничего не запланировано'
   },
   kk: {
-    'Profile created': 'Профиль жасалды', 'Plan confirmed': 'Жоспар расталды', 'Documents & appointments': 'Құжаттар мен кездесулер', 'Arrival complete': 'Келу аяқталды', 'Passport scan': 'Паспорт сканы', 'Proof of income': 'Табыс туралы анықтама', 'Passport photo': 'Паспорт суреті', 'Employment contract': 'Еңбек шарты', 'Birth certificate': 'Туу туралы куәлік', 'Flight ticket': 'Әуе билеті', 'Hotel booking': 'Қонақүй брондауы', Missing: 'Жоқ', Uploaded: 'Алынды', Approved: 'Мақұлданды', 'Migration Service appointment': 'Көші-қон қызметіндегі кездесу', 'Bank appointment': 'Банк кездесуі', 'Welcome lunch': 'Қош келдіңіз түскі асы', 'Bank follow-up': 'Банкке қайталама кездесу', 'Accountant consultation': 'Бухгалтер кеңесі', 'Legal consultation': 'Заң кеңесі', 'Residence application': 'Тұруға рұқсат өтініші', 'Airport transfer': 'Әуежай трансфері', 'Hotel check-in': 'Қонақүйге орналасу', 'Passport preparation': 'Паспорт дайындау', 'Fingerprint preparation': 'Саусақ іздерін дайындау', 'Bank account assistance': 'Банк шотына көмек', 'Salon appointment': 'Салонға кездесу', 'Translation services': 'Аударма қызметтері', 'BIN number': 'БСН', 'Personal Banking': 'Жеке банкинг', 'Business Banking': 'Бизнес банкинг', 'Phone line': 'Телефон желісі', 'Company registration': 'Компанияны тіркеу', 'Other': 'Басқа', 'Travel': 'Саяхат', Required: 'Міндетті', 'Select document': 'Құжатты таңдаңыз', 'Add request': 'Сұраныс қосу', 'Payment received in KZT': 'KZT бойынша алынған төлем', 'Save payment': 'Төлемді сақтау', 'Paid': 'Төленді', 'Total estimate': 'Жалпы есеп', 'Your relocation path': 'Сіздің көшу жолыңыз', 'Nothing scheduled': 'Жоспарланбаған'
+    'Profile created': 'Профиль жасалды', 'Plan confirmed': 'Жоспар расталды', 'Documents & appointments': 'Құжаттар мен кездесулер', 'Arrival complete': 'Келу аяқталды', 'Passport scan': 'Паспорт сканы', 'Proof of income': 'Табыс туралы анықтама', 'Passport photo': 'Паспорт суреті', 'Employment contract': 'Еңбек шарты', 'Birth certificate': 'Туу туралы куәлік', 'Criminal record certification': 'Сотталмағаны туралы анықтама', 'Certificate of non-inclusion in the Register of Disqualified Persons': 'Біліктілігі жойылған тұлғалар тізіліміне енгізілмегені туралы анықтама', 'Flight ticket': 'Әуе билеті', 'Hotel booking': 'Қонақүй брондауы', Missing: 'Жоқ', Uploaded: 'Алынды', Approved: 'Мақұлданды', 'Migration Service appointment': 'Көші-қон қызметіндегі кездесу', 'Bank appointment': 'Банк кездесуі', 'Welcome lunch': 'Қош келдіңіз түскі асы', 'Bank follow-up': 'Банкке қайталама кездесу', 'Accountant consultation': 'Бухгалтер кеңесі', 'Legal consultation': 'Заң кеңесі', 'Residence application': 'Тұруға рұқсат өтініші', 'Airport transfer': 'Әуежай трансфері', 'Hotel check-in': 'Қонақүйге орналасу', 'Passport preparation': 'Паспорт дайындау', 'Fingerprint preparation': 'Саусақ іздерін дайындау', 'Bank account assistance': 'Банк шотына көмек', 'Salon appointment': 'Салонға кездесу', 'Translation services': 'Аударма қызметтері', 'BIN number': 'БСН', 'Personal Banking': 'Жеке банкинг', 'Business Banking': 'Бизнес банкинг', 'Phone line': 'Телефон желісі', 'Company registration': 'Компанияны тіркеу', 'Other': 'Басқа', 'Travel': 'Саяхат', Required: 'Міндетті', 'Select document': 'Құжатты таңдаңыз', 'Add request': 'Сұраныс қосу', 'Payment received in KZT': 'KZT бойынша алынған төлем', 'Save payment': 'Төлемді сақтау', 'Paid': 'Төленді', 'Total estimate': 'Жалпы есеп', 'Your relocation path': 'Сіздің көшу жолыңыз', 'Nothing scheduled': 'Жоспарланбаған'
   },
 }
 const moreTranslations: Record<Language, Record<string, string>> = {
@@ -43,12 +43,17 @@ const finalTranslations: Record<Language, Record<string, string>> = {
 }
 const valueTranslations: Record<Language, Record<string, string>> = {
   en: {},
-  ru: { 'Digital Nomad Visa': 'Виза цифрового кочевника', 'Work Visa': 'Рабочая виза', 'Residence Permit': 'Вид на жительство', 'Tourist Visa': 'Туристическая виза', 'Relocation assistance': 'Помощь с переездом', 'Company formation': 'Регистрация компании', 'Full service package': 'Полный пакет услуг' },
-  kk: { 'Digital Nomad Visa': 'Цифрлық көшпенді визасы', 'Work Visa': 'Жұмыс визасы', 'Residence Permit': 'Тұруға ықтиярхат', 'Tourist Visa': 'Туристік виза', 'Relocation assistance': 'Көшуге көмек', 'Company formation': 'Компания құру', 'Full service package': 'Толық қызмет пакеті' },
+  ru: { 'Digital Nomad Visa': 'Виза цифрового кочевника', 'Work Visa': 'Рабочая виза', 'Residence Permit': 'Вид на жительство', 'Tourist Visa': 'Туристическая виза', 'Relocation assistance': 'Помощь с переездом', 'Company formation': 'Регистрация компании', 'Full service package': 'Полный пакет услуг', 'Charter': 'Устав', 'General Meeting minutes': 'Протокол общего собрания', ID: 'Удостоверение личности', 'Certified translator': 'Сертифицированный переводчик', 'State registration certificate': 'Свидетельство о государственной регистрации', 'Memorandum of Association': 'Учредительный договор', 'Founding agreement': 'Учредительное соглашение', 'Approve document': 'Одобрить документ' },
+  kk: { 'Digital Nomad Visa': 'Цифрлық көшпенді визасы', 'Work Visa': 'Жұмыс визасы', 'Residence Permit': 'Тұруға ықтиярхат', 'Tourist Visa': 'Туристік виза', 'Relocation assistance': 'Көшуге көмек', 'Company formation': 'Компания құру', 'Full service package': 'Толық қызмет пакеті', 'Charter': 'Жарғы', 'General Meeting minutes': 'Жалпы жиналыс хаттамасы', ID: 'Жеке куәлік', 'Certified translator': 'Сертификатталған аудармашы', 'State registration certificate': 'Мемлекеттік тіркеу туралы куәлік', 'Memorandum of Association': 'Құрылтай шарты', 'Founding agreement': 'Құрылтай келісімі', 'Approve document': 'Құжатты мақұлдау' },
+}
+const documentListTranslations: Record<Language, Record<string, string>> = {
+  en: {},
+  ru: { 'Customer document requests': 'Запросы документов от клиента', 'Client provided': 'Предоставлено клиентом', 'Approve documents': 'Одобрение документов', 'Documents of company formation': 'Документы для регистрации компании', 'No documents in this list.': 'В этом списке нет документов.' },
+  kk: { 'Customer document requests': 'Клиент сұраған құжаттар', 'Client provided': 'Клиент ұсынған құжаттар', 'Approve documents': 'Құжаттарды мақұлдау', 'Documents of company formation': 'Компанияны құру құжаттары', 'No documents in this list.': 'Бұл тізімде құжаттар жоқ.' },
 }
 
 const LanguageContext = createContext<{ language: Language; setLanguage: (language: Language) => void }>({ language: 'en', setLanguage: () => undefined })
-function useLanguage() { const context = useContext(LanguageContext); return { ...context, t: (text: string) => valueTranslations[context.language][text] ?? finalTranslations[context.language][text] ?? moreTranslations[context.language][text] ?? extraTranslations[context.language][text] ?? translations[context.language][text] ?? text } }
+function useLanguage() { const context = useContext(LanguageContext); return { ...context, t: (text: string) => documentListTranslations[context.language][text] ?? valueTranslations[context.language][text] ?? finalTranslations[context.language][text] ?? moreTranslations[context.language][text] ?? extraTranslations[context.language][text] ?? translations[context.language][text] ?? text } }
 function LanguageSelect() {
   const { language, setLanguage } = useLanguage()
   return <label className="language-select"><span>Language</span><select aria-label="Language" value={language} onChange={(event) => setLanguage(event.target.value as Language)}><option value="en">English</option><option value="ru">Русский</option><option value="kk">Қазақша</option></select></label>
@@ -61,6 +66,11 @@ type DocumentItem = {
   fileName?: string;
   dataUrl?: string;
   uploadedAt?: string
+  flightNumber?: string;
+  arrivalTime?: string;
+  departureTime?: string;
+  hotelName?: string
+  documentGroup?: 'Client provided' | 'Approve documents' | 'Documents of company formation'
 }
 type ScheduleItem = {
   id: number;
@@ -97,7 +107,7 @@ type Customer = {
 
 const initialCustomers: Customer[] = [
   {
-    id: 1, firstName: 'Elena', lastName: 'Volkova', dob: '1992-04-18', arrivalDate: '2026-08-11', departureDate: '2026-08-15',
+    id: 1, firstName: 'Natalia', lastName: 'M', dob: '1992-04-18', arrivalDate: '2026-08-11', departureDate: '2026-08-14',
     visaType: 'Digital Nomad Visa', requestType: 'Relocation assistance',
     email: 'elena@example.com', password: 'welcome123', currency: 'EUR', progress: 68,
     documents: [
@@ -150,17 +160,19 @@ const initialCustomers: Customer[] = [
 const hotelItems = [
   { type: 'Hotel', name: 'Altyn Eco Park', note: 'A peaceful stay surrounded by green space in Astana', image: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e0/Trip_to_Astana_%282015-10-24%29_02.jpg/960px-Trip_to_Astana_%282015-10-24%29_02.jpg' },
   { type: 'Hotel', name: 'Sheraton Astana', note: 'A central luxury hotel near the city’s key destinations', image: '/sheraton-astana.jpg', link: 'https://www.marriott.com/en-us/hotels/tsesi-sheraton-astana-hotel/overview/' },
-  { type: 'Hotel', name: 'Royal Park Hotel and Spa', note: 'Comfortable rooms and spa facilities for a restorative stay', image: 'https://lh3.googleusercontent.com/sitesv/AG8ngQUb7UyqUdqXdhx4FG1kmeNCdXANU6WDtRNa3N5sphaXxklUFetgc_EvBHP6q0o8WrpB99LL_hums3-2H2s1BJSVxHC422_lFOtIL87TVZBUM-lbKzESPudKqpr4zqXdzFsp87SOo8ZqN6BWUceihAQLlRreexKpRRMCa0j5yFQmV3P57B6KZh4Iq3y3=w1200', link: 'https://sites.google.com/view/royal-park-hotel-spa/' },
+  { type: 'Hotel', name: 'Royal Park Hotel and Spa', note: 'Comfortable rooms and spa facilities for a restorative stay', image: 'https://lh3.googleusercontent.com/sitesv/AG8ngQWETT9xrjmkWW_DcMu-DYCJkWLYNcxMytKlOHcRnFI-D28sHOE1K-oRKyND4p20o7y9qnrE9DqrMXh6_iFVe9HhpwlgllQwvV2WuVenQzTXREtvxcjEI3K3m_10cCqbKRjnc725D0yqmtKpjipxzpw3-x2hkdAWcCMvpcvv6dyYN77lWS9eyIFlwiAD=w16383', link: 'https://sites.google.com/view/royal-park-hotel-spa/' },
 ]
-const serviceOptions = ['Passport preparation', 'Fingerprint preparation', 'Bank account assistance', 'Airport transfer', 'Salon appointment', 'Translation services', 'BIN number', 'Personal Banking', 'Business Banking', 'Phone line', 'Company registration', 'Other']
+const serviceOptions = ['Passport preparation', 'Fingerprint preparation', 'Bank account assistance', 'Airport transfer', 'Salon appointment', 'Translation services', 'BIN number', 'Personal Banking', 'Business Banking', 'Phone line', 'Company registration', 'Charter', 'General Meeting minutes', 'ID', 'Certified translator', 'State registration certificate', 'Memorandum of Association', 'Other']
+const requestOptions = ['Relocation assistance', 'Company formation', 'Full service package', 'Personal Banking']
 const appointmentOptions = ['Migration Service appointment', 'Bank appointment', 'Welcome lunch', 'Bank follow-up', 'Accountant consultation', 'Legal consultation', 'Residence application', 'Airport transfer', 'Hotel check-in', 'Other']
-const documentOptions = ['Passport scan', 'Proof of income', 'Passport photo', 'Employment contract', 'Birth certificate', 'Flight ticket', 'Hotel booking', 'Other']
+const documentOptions = ['Passport scan', 'Proof of income', 'Passport photo', 'Employment contract', 'Birth certificate', 'Criminal record certification', 'Certificate of non-inclusion in the Register of Disqualified Persons', 'Power of Attorney', 'Charter', 'Order', 'Founding agreement', 'Flight ticket', 'Hotel booking', 'Other']
+const documentGroupOptions = ['Client provided', 'Approve documents', 'Documents of company formation']
 const fallbackRates: Record<Currency, number> = { KZT: 1, USD: 0.002, EUR: 0.0018, RUB: 0.16 }
 const currencySymbols: Record<Currency, string> = { KZT: '₸', USD: '$', EUR: '€', RUB: '₽' }
 const itinerary = [
   { day: 'Day 1', title: 'Discover central Astana', image: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ee/Trip_to_Astana_%282015-10-24%29_01.jpg/960px-Trip_to_Astana_%282015-10-24%29_01.jpg', stops: ['Check in and settle into your hotel', 'Walk along Nurzhol Boulevard to the Baiterek Monument', 'Enjoy dinner in the Esil District'] },
   { day: 'Day 2', title: 'Culture and city landmarks', image: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e0/Trip_to_Astana_%282015-10-24%29_02.jpg/960px-Trip_to_Astana_%282015-10-24%29_02.jpg', stops: ['Visit the National Museum of the Republic of Kazakhstan', 'See the Palace of Peace and Reconciliation', 'Take an evening walk around the EXPO 2017 site'] },
-  { day: 'Day 3', title: 'Relax, explore and depart', image: 'https://lh3.googleusercontent.com/sitesv/AG8ngQUb7UyqUdqXdhx4FG1kmeNCdXANU6WDtRNa3N5sphaXxklUFetgc_EvBHP6q0o8WrpB99LL_hums3-2H2s1BJSVxHC422_lFOtIL87TVZBUM-lbKzESPudKqpr4zqXdzFsp87SOo8ZqN6BWUceihAQLlRreexKpRRMCa0j5yFQmV3P57B6KZh4Iq3y3=w1200', stops: ['Have a relaxed morning at the hotel or spa', 'Explore the Presidential Park and enjoy a final local meal', 'Pick up gifts before departing Astana or continuing your journey'] },
+  { day: 'Day 3', title: 'Relax, explore and depart', image: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0d/Trip_to_Astana_%282015-10-24%29_06.jpg/960px-Trip_to_Astana_%282015-10-24%29_06.jpg', stops: ['Have a relaxed morning at the hotel or spa', 'Explore the Presidential Park and enjoy a final local meal', 'Pick up gifts before departing Astana or continuing your journey'] },
 ]
  
 function getMonthDates(date: string) {
@@ -206,7 +218,10 @@ function App() {
   const [language, setLanguage] = useState<Language>(() => (localStorage.getItem('aziza-language') as Language) || 'en')
   const [customers, setCustomers] = useState<Customer[]>(() => {
     const saved = localStorage.getItem('aziza-customers')
-    return saved ? JSON.parse(saved) : initialCustomers
+    const storedCustomers = saved ? JSON.parse(saved) as Customer[] : initialCustomers
+    return storedCustomers.map((storedCustomer) => storedCustomer.firstName === 'Elena' || storedCustomer.firstName === 'Natalia'
+      ? { ...storedCustomer, firstName: 'Natalia', lastName: storedCustomer.id === 1 ? 'M' : storedCustomer.lastName, departureDate: storedCustomer.id === 1 ? '2026-08-14' : storedCustomer.departureDate }
+      : storedCustomer)
   })
   const [session, setSession] = useState<{ role: Role; customerId?: number } | null>(null)
   const [selectedId, setSelectedId] = useState(2)
@@ -373,13 +388,24 @@ function ProfileStrip({ customer, isAdmin, onChange }: { customer: Customer; isA
         <div>
           <dt>{t('Visa type')}
           </dt>
-          <dd>{t(customer.visaType)}
+          <dd>{isAdmin
+            ? <select aria-label="Visa type" value={customer.visaType} onChange={(event) => onChange({ ...customer, visaType: event.target.value })}>
+              <option value="Digital Nomad Visa">{t('Digital Nomad Visa')}</option>
+              <option value="Work Visa">{t('Work Visa')}</option>
+              <option value="Residence Permit">{t('Residence Permit')}</option>
+              <option value="Tourist Visa">{t('Tourist Visa')}</option>
+            </select>
+            : t(customer.visaType)}
           </dd>
         </div>
         <div>
           <dt>{t('Request')}
           </dt>
-          <dd>{t(customer.requestType)}
+          <dd>{isAdmin
+            ? <select aria-label="Request" value={customer.requestType} onChange={(event) => onChange({ ...customer, requestType: event.target.value })}>
+              {requestOptions.map((item) => <option key={item} value={item}>{t(item)}</option>)}
+            </select>
+            : t(customer.requestType)}
           </dd>
         </div>
         <div>
@@ -465,6 +491,22 @@ function Documents({ customer, isAdmin, onChange }: { customer: Customer; isAdmi
   const { t } = useLanguage()
   const [newName, setNewName] = useState('')
   const [documentChoice, setDocumentChoice] = useState('')
+  const [documentGroup, setDocumentGroup] = useState<DocumentItem['documentGroup']>('Client provided')
+  const flightTicket = customer.documents.find((item) => item.name === 'Flight ticket')
+  const [flightDetails, setFlightDetails] = useState({
+    flightNumber: flightTicket?.flightNumber ?? '',
+    arrivalDate: customer.arrivalDate ?? '',
+    arrivalTime: flightTicket?.arrivalTime ?? '',
+    departureDate: customer.departureDate ?? '',
+    departureTime: flightTicket?.departureTime ?? '',
+  })
+  const hotelBooking = customer.documents.find((item) => item.name === 'Hotel booking')
+  const [hotelName, setHotelName] = useState(hotelBooking?.hotelName ?? '')
+  const sortedDocumentOptions = [...documentOptions].sort((first, second) => {
+    if (first === 'Other') return 1
+    if (second === 'Other') return -1
+    return t(first).localeCompare(t(second))
+  })
   function markDone(documentId: number) {
     onChange({
       ...customer,
@@ -477,14 +519,99 @@ function Documents({ customer, isAdmin, onChange }: { customer: Customer; isAdmi
         : item)
     })
   }
+  function approveDocument(documentId: number) {
+    if (isAdmin) return
+    onChange({
+      ...customer,
+      documents: customer.documents.map((item) => item.id === documentId && item.status === 'Uploaded'
+        ? { ...item, status: 'Approved' }
+        : item)
+    })
+  }
+  function deleteDocument(documentId: number) {
+    if (!window.confirm('Delete this document request?')) return
+    onChange({ ...customer, documents: customer.documents.filter((item) => item.id !== documentId) })
+  }
   function addDocument(event: FormEvent) {
     event.preventDefault();
     if (!newName.trim()) return
     const category = ['Flight ticket', 'Hotel booking'].includes(documentChoice) ? 'Travel' : 'Required'
-    onChange({ ...customer, documents: [...customer.documents, { id: Date.now(), name: newName.trim(), category, status: 'Missing' }] });
+    onChange({ ...customer, documents: [...customer.documents, { id: Date.now(), name: newName.trim(), category, status: 'Missing', documentGroup }] });
     setNewName('')
     setDocumentChoice('')
+    setDocumentGroup('Client provided')
   }
+  function saveFlightDetails(event: FormEvent) {
+    event.preventDefault()
+    if (!flightTicket || !flightDetails.flightNumber || !flightDetails.arrivalDate || !flightDetails.arrivalTime || !flightDetails.departureDate || !flightDetails.departureTime) return
+    onChange({
+      ...customer,
+      arrivalDate: flightDetails.arrivalDate,
+      departureDate: flightDetails.departureDate,
+      documents: customer.documents.map((item) => item.id === flightTicket.id
+        ? { ...item, status: 'Uploaded', uploadedAt: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }), flightNumber: flightDetails.flightNumber, arrivalTime: flightDetails.arrivalTime, departureTime: flightDetails.departureTime }
+        : item)
+    })
+  }
+  function saveHotelDetails(event: FormEvent) {
+    event.preventDefault()
+    if (!hotelBooking || !hotelName.trim()) return
+    onChange({
+      ...customer,
+      documents: customer.documents.map((item) => item.id === hotelBooking.id
+        ? { ...item, status: 'Uploaded', uploadedAt: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }), hotelName: hotelName.trim() }
+        : item)
+    })
+  }
+  const companyFormationNames = ['Criminal record certification', 'Certificate of non-inclusion in the Register of Disqualified Persons', 'Power of Attorney', 'Charter', 'Order', 'Founding agreement', 'BIN number', 'Company registration', 'Employment contract']
+  const renderDocumentRows = (documents: DocumentItem[]) => documents.map((item) =>
+    <div className={`document-row ${item.status.toLowerCase()} ${!isAdmin && item.status === 'Uploaded' ? 'customer-approvable' : ''}`} key={item.id} onClick={() => approveDocument(item.id)} onKeyDown={(event) => { if (event.key === 'Enter' || event.key === ' ') approveDocument(item.id) }} role={!isAdmin && item.status === 'Uploaded' ? 'button' : undefined} tabIndex={!isAdmin && item.status === 'Uploaded' ? 0 : undefined} aria-label={!isAdmin && item.status === 'Uploaded' ? `${t('Approve document')}: ${t(item.name)}` : undefined}>
+      <div className={`file-icon ${item.status.toLowerCase()}`}><FileText /></div>
+      <div className="document-name">
+        <strong>{t(item.name)}</strong>
+        <small>{item.fileName ?? `${t(item.category)} document`}{item.uploadedAt ? ` · ${item.uploadedAt}` : ''}</small>
+      </div>
+      {!isAdmin &&
+        <span className={`status ${item.status.toLowerCase()}`} aria-label={t(item.status)}>
+          {item.status === 'Missing' && <X aria-hidden="true" />}
+          {item.status !== 'Missing' && <Check aria-hidden="true" />}
+        </span>
+      }
+      <div className="document-actions">
+        {isAdmin &&
+          <button className={`status-toggle ${item.status.toLowerCase()}`} aria-label={item.status === 'Missing' ? 'Mark document complete' : 'Document complete'} title={item.status === 'Missing' ? 'Mark document complete' : 'Document complete'} onClick={() => item.status === 'Missing' && markDone(item.id)}>
+            {item.status === 'Missing' ? <X /> : <ChevronRight />}
+          </button>
+        }
+        {isAdmin &&
+          <button className="delete-document" aria-label="Delete document" title="Delete document" onClick={() => deleteDocument(item.id)}><Trash2 /></button>
+        }
+      </div>
+      {!isAdmin && item.name === 'Flight ticket' &&
+        <form className="flight-details" onClick={(event) => event.stopPropagation()} onSubmit={saveFlightDetails}>
+          <label>Flight number<input value={flightDetails.flightNumber} onChange={(event) => setFlightDetails({ ...flightDetails, flightNumber: event.target.value })} placeholder="e.g. KC 902" required /></label>
+          <label>Arrival date<input type="date" value={flightDetails.arrivalDate} onChange={(event) => setFlightDetails({ ...flightDetails, arrivalDate: event.target.value })} required /></label>
+          <label>Arrival time<input type="time" value={flightDetails.arrivalTime} onChange={(event) => setFlightDetails({ ...flightDetails, arrivalTime: event.target.value })} required /></label>
+          <label>Departure date<input type="date" value={flightDetails.departureDate} onChange={(event) => setFlightDetails({ ...flightDetails, departureDate: event.target.value })} required /></label>
+          <label>Departure time<input type="time" value={flightDetails.departureTime} onChange={(event) => setFlightDetails({ ...flightDetails, departureTime: event.target.value })} required /></label>
+          <button className="secondary" type="submit">Save flight details</button>
+        </form>
+      }
+      {!isAdmin && item.name === 'Hotel booking' &&
+        <form className="hotel-details" onClick={(event) => event.stopPropagation()} onSubmit={saveHotelDetails}>
+          <label>Hotel name<input value={hotelName} onChange={(event) => setHotelName(event.target.value)} placeholder="e.g. Sheraton Astana" required /></label>
+          <button className="secondary" type="submit">Save hotel details</button>
+        </form>
+      }
+    </div>
+  )
+  const isNatalia = customer.firstName === 'Natalia'
+  const getDocumentGroup = (item: DocumentItem): DocumentItem['documentGroup'] => item.documentGroup
+    ?? (isNatalia ? 'Client provided' : companyFormationNames.includes(item.name) ? 'Documents of company formation' : item.status === 'Uploaded' ? 'Approve documents' : 'Client provided')
+  const documentSections = documentGroupOptions.map((title) => ({
+    title,
+    documents: customer.documents.filter((item) => getDocumentGroup(item) === title),
+  }))
   return (
     <section className="panel">
       <div className="panel-head">
@@ -496,39 +623,23 @@ function Documents({ customer, isAdmin, onChange }: { customer: Customer; isAdmi
           <form className="inline-form" onSubmit={addDocument}>
             <select aria-label="Document request" value={documentChoice} onChange={(event) => { setDocumentChoice(event.target.value); setNewName(event.target.value === 'Other' ? '' : event.target.value) }} required>
               <option value="" disabled>{t('Select document')}</option>
-              {documentOptions.map((item) => <option key={item} value={item}>{t(item)}</option>)}
+              {sortedDocumentOptions.map((item) => <option key={item} value={item}>{t(item)}</option>)}
+            </select>
+            <select aria-label="Document list" value={documentGroup} onChange={(event) => setDocumentGroup(event.target.value as DocumentItem['documentGroup'])} required>
+              {documentGroupOptions.map((item) => <option key={item} value={item}>{t(item)}</option>)}
             </select>
             {documentChoice === 'Other' && <input aria-label="Document name" placeholder={t('Enter document name')} value={newName} onChange={(event) => setNewName(event.target.value)} required />}
             <button className="secondary" type="submit"><Plus />{t('Add request')}</button>
           </form>
         }
       </div>
-      <div className="document-list">
-        {customer.documents.map((item) =>
-          <div className={`document-row ${item.status.toLowerCase()}`} key={item.id}>
-            <div className={`file-icon ${item.status.toLowerCase()}`}>
-              <FileText />
-            </div>
-            <div className="document-name">
-              <strong>{t(item.name)}</strong>
-              <small>{item.fileName ?? `${t(item.category)} document`}{item.uploadedAt ? ` · ${item.uploadedAt}` : ''}</small>
-            </div>
-            {!isAdmin &&
-              <span className={`status ${item.status.toLowerCase()}`} aria-label={t(item.status)}>
-                {item.status === 'Missing' && <X aria-hidden="true" />}
-                {item.status !== 'Missing' && <Check aria-hidden="true" />}
-              </span>
-            }
-            <div className="document-actions">
-              {isAdmin &&
-                <button className={`status-toggle ${item.status.toLowerCase()}`} aria-label={item.status === 'Missing' ? 'Mark document complete' : 'Document complete'} title={item.status === 'Missing' ? 'Mark document complete' : 'Document complete'} onClick={() => item.status === 'Missing' && markDone(item.id)}>
-                  {item.status === 'Missing' ? <X /> : <ChevronRight />}
-                </button>
-              }
-            </div>
-          </div>
-        )}
-      </div>
+      {documentSections.map((section) =>
+        <section className="document-section" key={section.title}>
+          <h3>{t(section.title)}</h3>
+          <div className="document-list">{renderDocumentRows(section.documents)}</div>
+          {section.documents.length === 0 && <p className="empty-document-section">{t('No documents in this list.')}</p>}
+        </section>
+      )}
     </section>
   )
 }
@@ -647,11 +758,15 @@ function Pricing({ customer, isAdmin, onChange }: { customer: Customer; isAdmin:
   const [otherService, setOtherService] = useState('');
   const [price, setPrice] = useState('');
   const [paidInput, setPaidInput] = useState(String(customer.paid ?? ''))
+  const [paymentCurrency, setPaymentCurrency] = useState<Currency>('KZT')
+  const [serviceEdits, setServiceEdits] = useState<Record<number, { name: string; price: string }>>(() => Object.fromEntries(customer.services.map((item) => [item.id, { name: item.name, price: String(item.price) }])))
   const [rates, setRates] = useState<Record<Currency, number>>(fallbackRates)
   const [rateDate, setRateDate] = useState('')
   const total = customer.services.reduce((sum, item) => sum + item.price, 0);
   const paid = Math.max(0, customer.paid ?? 0)
   const outstanding = Math.max(0, total - paid)
+  const overpayment = Math.max(0, paid - total)
+  const converted = (amount: number) => customer.currency === 'KZT' ? '' : `≈ ${currencySymbols[customer.currency]}${(amount * rates[customer.currency]).toLocaleString(undefined, { maximumFractionDigits: 2 })}`
 
   useEffect(() => {
     fetch('https://nationalbank.kz/rss/rates_all.xml')
@@ -689,7 +804,20 @@ function Pricing({ customer, isAdmin, onChange }: { customer: Customer; isAdmin:
     event.preventDefault()
     const paidAmount = Number(paidInput)
     if (!Number.isFinite(paidAmount) || paidAmount < 0) return
-    onChange({ ...customer, paid: paidAmount })
+    const paidInKzt = paymentCurrency === 'KZT' ? paidAmount : paidAmount / rates[paymentCurrency]
+    onChange({ ...customer, paid: paidInKzt })
+  }
+
+  function saveService(event: FormEvent, serviceId: number) {
+    event.preventDefault()
+    const edit = serviceEdits[serviceId]
+    if (!edit?.name.trim() || !edit.price || Number(edit.price) <= 0) return
+    onChange({ ...customer, services: customer.services.map((item) => item.id === serviceId ? { ...item, name: edit.name.trim(), price: Number(edit.price) } : item) })
+  }
+
+  function deleteService(serviceId: number) {
+    if (!window.confirm('Delete this service?')) return
+    onChange({ ...customer, services: customer.services.filter((item) => item.id !== serviceId) })
   }
 
   return (
@@ -706,21 +834,28 @@ function Pricing({ customer, isAdmin, onChange }: { customer: Customer; isAdmin:
         </div>
         <div className="price-list">{customer.services.map((item) =>
           <div key={item.id}>
-            <span>{t(item.name)}</span>
-            <strong>₸{item.price.toLocaleString()}</strong>
-            <small>{customer.currency !== 'KZT' ? `≈ ${currencySymbols[customer.currency]}${(item.price * rates[customer.currency]).toLocaleString(undefined, { maximumFractionDigits: 0 })}` : ''}</small>
+            {isAdmin
+              ? <form className="service-edit" onSubmit={(event) => saveService(event, item.id)}>
+                <input aria-label={`Service name ${item.id}`} value={serviceEdits[item.id]?.name ?? item.name} onChange={(event) => setServiceEdits({ ...serviceEdits, [item.id]: { ...(serviceEdits[item.id] ?? { price: String(item.price) }), name: event.target.value } })} />
+                <input aria-label={`Service price ${item.id}`} type="number" step="any" min="0" value={serviceEdits[item.id]?.price ?? item.price} onChange={(event) => setServiceEdits({ ...serviceEdits, [item.id]: { ...(serviceEdits[item.id] ?? { name: item.name }), price: event.target.value } })} />
+                <button className="secondary" type="submit">{t('Save')}</button>
+                <small>{converted(item.price)}</small>
+                <button className="delete-service" type="button" aria-label="Delete service" title="Delete service" onClick={() => deleteService(item.id)}><Trash2 /></button>
+              </form>
+              : <><span>{t(item.name)}</span><strong>₸{item.price.toLocaleString()}</strong><small>{converted(item.price)}</small></>}
           </div>)}
         </div>
         <div className="price-total">
           <span>{t('Total estimate')}<small>{t('Converted at indicative rate')}</small></span>
           <strong>₸{total.toLocaleString()}
-            <small>{customer.currency !== 'KZT' ? `≈ ${currencySymbols[customer.currency]}${(total * rates[customer.currency]).toLocaleString(undefined, { maximumFractionDigits: 0 })}` : ''}
+            <small>{converted(total)}
             </small>
           </strong>
         </div>
         <div className="balance-list">
-          <div><span>{t('Paid')}</span><strong>₸{paid.toLocaleString()}</strong></div>
-          <div><span>{t('Amount due')}</span><strong>₸{outstanding.toLocaleString()}</strong></div>
+          <div><span>{t('Paid')}</span><strong>₸{paid.toLocaleString()}<small>{converted(paid)}</small></strong></div>
+          <div><span>{t('Amount due')}</span><strong>₸{outstanding.toLocaleString()}<small>{converted(outstanding)}</small></strong></div>
+          {overpayment > 0 && <div className="overpayment"><span>{t('Overpayment')}</span><strong>₸{overpayment.toLocaleString()}<small>{converted(overpayment)}</small></strong></div>}
         </div>
       </section>
       {
@@ -744,7 +879,13 @@ function Pricing({ customer, isAdmin, onChange }: { customer: Customer; isAdmin:
               <button className="primary" type="submit"><Plus />{t('Add to estimate')}</button>
             </form>
             <form onSubmit={savePayment}>
-              <label>{t('Payment received in KZT')}
+              <label>{t('Payment received')}
+                <select aria-label="Payment currency" value={paymentCurrency} onChange={(event) => setPaymentCurrency(event.target.value as Currency)}>
+                  <option value="KZT">KZT ₸</option>
+                  <option value="USD">USD $</option>
+                  <option value="EUR">EUR €</option>
+                  <option value="RUB">RUB ₽</option>
+                </select>
                 <input type="number" step="any" min="0" value={paidInput} onChange={(event) => setPaidInput(event.target.value)} placeholder="0" required />
               </label>
               <button className="secondary" type="submit">{t('Save payment')}</button>
@@ -777,7 +918,7 @@ function Guide() {
         <div className="guide-grid hotel-grid">
           {hotelItems.map((item) =>
             <article key={item.name}>
-              <img src={item.image} alt={item.name} />
+              <img src={item.image} alt={`${item.name} main building`} loading="eager" />
               <div>
                 <span>{t(item.type)}</span>
                 <h3>{item.name}</h3>
@@ -790,7 +931,7 @@ function Guide() {
       </div>
       <div className="itinerary">
         <div className="itinerary-head">
-          <span className="eyebrow">{t('FOUR DAYS IN ASTANA')}</span>
+          <span className="eyebrow">{t('THREE DAYS IN ASTANA')}</span>
           <h2>{t('A considered city itinerary')}</h2>
           <p>{t('A gentle rhythm of landmarks, local food and time to settle in.')}</p>
         </div>
@@ -844,7 +985,9 @@ function AddCustomer({ onClose, onAdd, nextId }: { onClose: () => void; onAdd: (
                 <option value="Tourist Visa">{t('Tourist Visa')}</option>
               </select>
             </label>
-            <label>{t('Request type')}<input value={draft.requestType} onChange={(event) => setDraft({ ...draft, requestType: event.target.value })} required /></label>
+            <label>{t('Request type')}<select value={draft.requestType} onChange={(event) => setDraft({ ...draft, requestType: event.target.value })} required>
+              {requestOptions.map((item) => <option key={item} value={item}>{t(item)}</option>)}
+            </select></label>
             <label>{t('Preferred currency')}<select value={draft.currency} onChange={(event) => setDraft({ ...draft, currency: event.target.value as Currency })}>
               <option>KZT</option>
               <option>USD</option>

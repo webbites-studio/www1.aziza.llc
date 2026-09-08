@@ -48,7 +48,7 @@ describe('administrator journey', () => {
         const user = await signIn('admin')
 
         expect(screen.getByRole('heading', { name: 'Customers' })).toBeVisible()
-        await user.click(screen.getByRole('button', { name: /Elena Volkova/ }))
+        await user.click(screen.getByRole('button', { name: /Natalia M/ }))
         await user.selectOptions(screen.getByLabelText('Document request'), 'Other')
         await user.type(screen.getByLabelText('Document name'), 'Marriage certificate')
         await user.click(screen.getByRole('button', { name: 'Add request' }))

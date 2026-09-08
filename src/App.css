@@ -457,6 +457,16 @@ button.table-row:hover {
   font: 600 10px 'DM Sans', sans-serif;
 }
 
+.profile-strip dd select {
+  width: 100%;
+  min-width: 0;
+  padding: 4px 5px;
+  color: var(--ink);
+  background: #fff;
+  border: 1px solid #cbd8ce;
+  font: 600 10px 'DM Sans', sans-serif;
+}
+
 .overview-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -572,6 +582,25 @@ select:focus {
   font-size: 11px;
 }
 
+.document-section {
+  margin-top: 22px;
+  border-top: 1px solid var(--line);
+}
+
+.document-section h3 {
+  margin: 0;
+  padding: 15px 24px 10px;
+  color: var(--green);
+  font: 600 18px 'Newsreader', serif;
+}
+
+.empty-document-section {
+  margin: 0;
+  padding: 0 24px 18px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
 .document-row {
   min-height: 78px;
   padding: 14px 24px;
@@ -591,6 +620,17 @@ select:focus {
 .document-row.approved {
   background: #f1f8f2;
   border-left: 3px solid var(--green);
+}
+
+.document-row.customer-approvable {
+  cursor: pointer;
+}
+
+.document-row.customer-approvable:hover,
+.document-row.customer-approvable:focus-visible {
+  background: #e5f1e7;
+  outline: 2px solid var(--green);
+  outline-offset: -2px;
 }
 
 .file-icon {
@@ -679,6 +719,62 @@ select:focus {
   gap: 5px;
 }
 
+.flight-details {
+  grid-column: 2 / -1;
+  padding: 14px 0 2px;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(100px, 1fr)) auto;
+  gap: 8px;
+  border-top: 1px solid #f0d8d3;
+}
+
+.flight-details label {
+  color: var(--muted);
+  font-size: 9px;
+  font-weight: 600;
+}
+
+.flight-details input {
+  width: 100%;
+  margin-top: 5px;
+  padding: 8px;
+  font-size: 10px;
+}
+
+.flight-details button {
+  align-self: end;
+  min-height: 34px;
+  white-space: nowrap;
+}
+
+.hotel-details {
+  grid-column: 2 / -1;
+  padding: 14px 0 2px;
+  display: flex;
+  align-items: end;
+  gap: 8px;
+  border-top: 1px solid #f0d8d3;
+}
+
+.hotel-details label {
+  max-width: 280px;
+  color: var(--muted);
+  font-size: 9px;
+  font-weight: 600;
+}
+
+.hotel-details input {
+  width: 100%;
+  margin-top: 5px;
+  padding: 8px;
+  font-size: 10px;
+}
+
+.hotel-details button {
+  min-height: 34px;
+  white-space: nowrap;
+}
+
 .status-toggle {
   width: 34px;
   height: 34px;
@@ -703,6 +799,28 @@ select:focus {
 
 .status-toggle svg {
   width: 17px;
+}
+
+.delete-document {
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  display: inline-grid;
+  place-items: center;
+  color: #c65345;
+  background: #f7e3df;
+  border: 1px solid #e2b8b0;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.delete-document:hover {
+  background: #f7e3df;
+  border-color: #e2b8b0;
+}
+
+.delete-document svg {
+  width: 16px;
 }
 
 .two-column {
@@ -942,6 +1060,44 @@ label {
   font-size: 12px;
 }
 
+.service-edit {
+  grid-column: 1 / -1;
+  width: 100%;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 130px auto 34px;
+  align-items: center;
+  gap: 8px;
+}
+
+.service-edit input {
+  width: 100%;
+  padding: 8px;
+  font-size: 11px;
+}
+
+.service-edit button {
+  min-height: 32px;
+  padding: 0 10px;
+  white-space: nowrap;
+}
+
+.service-edit .delete-service {
+  width: 34px;
+  padding: 0;
+  color: #c65345;
+  background: transparent;
+  border: 1px solid transparent;
+}
+
+.service-edit .delete-service:hover {
+  background: #f7e3df;
+  border-color: #e2b8b0;
+}
+
+.delete-service svg {
+  width: 16px;
+}
+
 .price-list strong {
   text-align: right;
 }
@@ -994,6 +1150,15 @@ label {
   font-size: 13px;
 }
 
+.balance-list strong small,
+.service-edit small {
+  display: block;
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 9px;
+  font-weight: 400;
+}
+
 .balance-list>div:last-child strong {
   color: var(--coral);
   font-size: 19px;
@@ -1002,6 +1167,15 @@ label {
 .balance-list>div:last-child span {
   align-self: center;
   font-size: 14px;
+  font-weight: 600;
+}
+
+.balance-list .overpayment strong {
+  color: var(--green);
+}
+
+.balance-list .overpayment span {
+  color: var(--green);
   font-weight: 600;
 }
 
@@ -1067,6 +1241,10 @@ label {
   height: 210px;
   display: block;
   object-fit: cover;
+}
+
+.hotel-grid img {
+  object-position: center top;
 }
 
 .guide-grid article>div {
@@ -1512,6 +1690,23 @@ label {
 
   .document-actions {
     grid-column: 2 / -1;
+  }
+
+  .flight-details {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .flight-details button {
+    grid-column: 1 / -1;
+  }
+
+  .hotel-details {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .hotel-details label {
+    max-width: none;
   }
 
   .status-toggle {
