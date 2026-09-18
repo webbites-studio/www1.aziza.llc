@@ -1,0 +1,86 @@
+import type { Currency, Customer } from './types/portal-types.js';
+
+export const initialCustomers: Customer[] = [
+  {
+    id: 1,
+    firstName: 'Natalia',
+    lastName: 'M',
+    dob: '1992-04-18',
+    arrivalDate: '2026-08-11',
+    departureDate: '2026-08-14',
+    visaType: 'Digital Nomad Visa',
+    requestType: 'Relocation assistance',
+    email: 'elena@example.com',
+    password: 'welcome123',
+    currency: 'EUR',
+    progress: 68,
+    documents: [
+      { id: 1, name: 'Passport scan', category: 'Required', status: 'Approved', fileName: 'passport-natalia.pdf', uploadedAt: 'Aug 8, 2026' },
+      { id: 2, name: 'Proof of income', category: 'Required', status: 'Uploaded', fileName: 'income-statement.pdf', uploadedAt: 'Aug 10, 2026' },
+      { id: 3, name: 'Passport photo', category: 'Required', status: 'Missing' },
+      { id: 4, name: 'Flight ticket', category: 'Travel', status: 'Missing' },
+      { id: 5, name: 'Hotel booking', category: 'Travel', status: 'Missing' },
+    ],
+    schedule: [
+      { id: 1, date: '2026-08-12', time: '12:00', title: 'Migration Service appointment', location: 'Public Service Centre, Astana' },
+      { id: 2, date: '2026-08-12', time: '13:00', title: 'Bank appointment', location: 'Halyk Bank, Mangilik El Avenue' },
+      { id: 3, date: '2026-08-12', time: '14:00', title: 'Welcome lunch', location: 'Qazaq Gourmet, Astana' },
+      { id: 4, date: '2026-08-13', time: '10:00', title: 'Bank follow-up', location: 'Halyk Bank, Mangilik El Avenue' },
+      { id: 5, date: '2026-08-13', time: '11:00', title: 'Accountant consultation', location: 'Esil District office' },
+    ],
+    services: [
+      { id: 1, name: 'Passport preparation', price: 180000 },
+      { id: 2, name: 'Fingerprint preparation', price: 90000 },
+      { id: 3, name: 'Bank account assistance', price: 250000 },
+      { id: 4, name: 'Airport transfer', price: 75000 },
+    ],
+  },
+  {
+    id: 2,
+    firstName: 'Daniel',
+    lastName: 'Meyer',
+    dob: '1988-11-02',
+    arrivalDate: '2026-08-13',
+    departureDate: '2026-08-16',
+    visaType: 'Work Visa',
+    requestType: 'Company formation',
+    email: 'daniel@example.com',
+    password: 'welcome123',
+    currency: 'USD',
+    progress: 42,
+    documents: [
+      { id: 1, name: 'Passport scan', category: 'Required', status: 'Uploaded', fileName: 'passport-daniel.jpg', uploadedAt: 'Aug 9, 2026' },
+      { id: 2, name: 'Employment contract', category: 'Required', status: 'Missing' },
+      { id: 3, name: 'Flight ticket', category: 'Travel', status: 'Missing' },
+      { id: 4, name: 'Hotel booking', category: 'Travel', status: 'Missing' },
+    ],
+    schedule: [{ id: 1, date: '2026-08-14', time: '11:30', title: 'Legal consultation', location: 'Saryarka District office' }],
+    services: [{ id: 1, name: 'Company registration', price: 650000 }, { id: 2, name: 'Airport transfer', price: 75000 }],
+  },
+  {
+    id: 3,
+    firstName: 'Sofia',
+    lastName: 'Petrova',
+    dob: '1995-07-21',
+    arrivalDate: '2026-08-14',
+    departureDate: '2026-08-17',
+    visaType: 'Residence Permit',
+    requestType: 'Full service package',
+    email: 'sofia@example.com',
+    password: 'welcome123',
+    currency: 'RUB',
+    progress: 84,
+    documents: [
+      { id: 1, name: 'Passport scan', category: 'Required', status: 'Approved', fileName: 'passport-sofia.pdf' },
+      { id: 2, name: 'Birth certificate', category: 'Required', status: 'Approved', fileName: 'birth-certificate.pdf' },
+      { id: 3, name: 'Flight ticket', category: 'Travel', status: 'Uploaded', fileName: 'flight-ticket.pdf' },
+      { id: 4, name: 'Hotel booking', category: 'Travel', status: 'Missing' },
+    ],
+    schedule: [{ id: 1, date: '2026-08-15', time: '09:30', title: 'Residence application', location: 'Public Service Centre, Astana' }],
+    services: [{ id: 1, name: 'Residence permit preparation', price: 480000 }],
+  },
+];
+
+export function cloneInitialCustomers(): Customer[] {
+  return JSON.parse(JSON.stringify(initialCustomers)) as Customer[];
+}
