@@ -87,13 +87,20 @@ export class LocalLoginPage extends BaseComponent<LoginState> {
   private login(data: FormData): void {
     const email = formValue(data, 'email');
     const password = formValue(data, 'password');
+
     if (this.state.role === 'admin' && email === 'admin@aziza.kz' && password === 'admin123') {
-      setLocalSession({ role: 'admin' }); void navigateTo('/customers', 'replace'); return;
+      setLocalSession({ role: 'admin' });
+      void navigateTo('/customers', 'replace');
+      return;
     }
+
     const customer = getPortalState().customers.find((item) => item.email.toLowerCase() === email.toLowerCase() && item.password === password);
     if (this.state.role === 'customer' && customer) {
-      setLocalSession({ role: 'customer', customerId: customer.id }); void navigateTo('/overview', 'replace'); return;
+      setLocalSession({ role: 'customer', customerId: customer.id });
+      void navigateTo('/overview', 'replace');
+      return;
     }
+
     this.setState({ error: 'Email or password is incorrect.' });
   }
 }
