@@ -49,7 +49,7 @@ export class PortalSidebar extends BaseComponent<SidebarState> {
         </div>
       </aside>
     `;
-    this.queryAll<HTMLAnchorElement>('nav a').forEach((link) => this.addEventListener(link, 'click', (event) => { event.preventDefault(); void navigateTo(link.pathname, 'push'); }));
+
     const close = this.query('[data-action="close"]');
     if (close) this.addEventListener(close, 'click', () => this.setState({ open: false }));
     const logout = this.query('[data-action="logout"]');
