@@ -30,6 +30,7 @@ export class PortalSidebar extends BaseComponent<SidebarState> {
     const navLinks = items.map(([view, label, name]) => `
       <a class="${this.state.activeView === view ? 'active' : ''}" href="${href(view)}" data-view="${view}">${icon(name)}${t(label)}</a>
     `).join('');
+
     this.root.innerHTML = `
       <aside class="sidebar ${this.state.open ? 'open' : ''}">
         <div class="brand">
