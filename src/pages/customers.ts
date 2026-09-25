@@ -64,9 +64,12 @@ export class CustomersPage extends PortalLayout {
 
   protected attachPageEvents(contentRoot: HTMLElement): void {
     contentRoot.querySelectorAll<HTMLElement>('[data-customer]').forEach((row) => this.addEventListener(row, 'click', () => { selectCustomer(Number(row.dataset.customer)); void navigateTo('/documents', 'push'); }));
+
     const search = contentRoot.querySelector<HTMLInputElement>('[data-search-input]');
     if (search) this.addEventListener(search, 'input', () => contentRoot.querySelectorAll<HTMLElement>('[data-search]').forEach((row) => { row.hidden = !(row.dataset.search ?? '').includes(search.value.toLowerCase()); }));
+
     contentRoot.querySelectorAll<HTMLElement>('[data-close-modal]').forEach((button) => this.addEventListener(button, 'click', () => { this.showModal = false; this.setState({}); }));
+
     const form = contentRoot.querySelector<HTMLFormElement>('[data-add-customer]');
     if (form) this.addEventListener(form, 'submit', (event) => { event.preventDefault(); this.createCustomer(new FormData(form)); });
   }
@@ -108,6 +111,7 @@ export class CustomersPage extends PortalLayout {
   private createCustomer(data: FormData): void {
     const customers = getPortalState().customers;
     const customer: Customer = { id: Math.max(...customers.map((item) => item.id)) + 1, firstName: formValue(data, 'firstName'), lastName: formValue(data, 'lastName'), dob: '', visaType: formValue(data, 'visaType'), requestType: formValue(data, 'requestType'), email: formValue(data, 'email'), password: formValue(data, 'password'), currency: formValue(data, 'currency') as Currency, progress: 10, documents: [{ id: 1, name: 'Passport scan', category: 'Required', status: 'Missing' }, { id: 2, name: 'Flight ticket', category: 'Travel', status: 'Missing' }, { id: 3, name: 'Hotel booking', category: 'Travel', status: 'Missing' }], schedule: [], services: [] };
-    this.showModal = false; addCustomer(customer);
+    this.showModal = false;
+    addCustomer(customer);
   }
 }
