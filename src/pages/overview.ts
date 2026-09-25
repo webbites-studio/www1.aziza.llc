@@ -38,10 +38,10 @@ export class OverviewPage extends PortalLayout {
     `;
   }
 
-  private card(path: string, name: IconName, label: string, value: string): string {
+  private card(path: string, iconName: IconName, label: string, value: string): string {
     return `
       <a class="summary-card" href="${path}">
-        ${icon(name)}
+        ${icon(iconName)}
         <span><small>${label}</small><strong>${value}</strong></span>
         ${icon('chevron-right')}
       </a>
