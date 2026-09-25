@@ -4,7 +4,7 @@ export const initialCustomers: Customer[] = [
   {
     id: 1,
     firstName: 'Natalia',
-    lastName: 'M',
+    lastName: 'Buliban',
     dob: '1992-04-18',
     arrivalDate: '2026-08-11',
     departureDate: '2026-08-14',

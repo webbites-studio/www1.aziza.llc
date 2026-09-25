@@ -108,6 +108,7 @@ export class CustomersPage extends PortalLayout {
   private createCustomer(data: FormData): void {
     const customers = getPortalState().customers;
     const customer: Customer = { id: Math.max(...customers.map((item) => item.id)) + 1, firstName: formValue(data, 'firstName'), lastName: formValue(data, 'lastName'), dob: '', visaType: formValue(data, 'visaType'), requestType: formValue(data, 'requestType'), email: formValue(data, 'email'), password: formValue(data, 'password'), currency: formValue(data, 'currency') as Currency, progress: 10, documents: [{ id: 1, name: 'Passport scan', category: 'Required', status: 'Missing' }, { id: 2, name: 'Flight ticket', category: 'Travel', status: 'Missing' }, { id: 3, name: 'Hotel booking', category: 'Travel', status: 'Missing' }], schedule: [], services: [] };
-    this.showModal = false; addCustomer(customer);
+    this.showModal = false;
+    addCustomer(customer);
   }
 }

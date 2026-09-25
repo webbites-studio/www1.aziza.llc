@@ -38,7 +38,14 @@ export abstract class PortalLayout extends BaseComponent<ComponentState> {
     const profileRoot = this.query<HTMLElement>('[data-component="profile"]');
     const contentRoot = this.query<HTMLElement>('[data-page-content]');
     if (sidebarRoot) { this.sidebar = new PortalSidebar(sidebarRoot, this.view); this.sidebar.mount(); }
-    if (topbarRoot) { this.topbar = new PortalTopbar(topbarRoot, this.view, () => this.sidebar?.open(), this.view === 'overview' ? () => this.onAddCustomer() : undefined); this.topbar.mount(); }
+    if (topbarRoot) {
+      this.topbar = new PortalTopbar(topbarRoot,
+        this.view,
+        () => this.sidebar?.open(),
+        this.view === 'overview' ? () => this.onAddCustomer() : undefined
+      );
+      this.topbar.mount();
+    }
     if (profileRoot && !(this.isAdmin && this.view === 'overview')) { this.profile = new ProfileStrip(profileRoot); this.profile.mount(); }
     if (contentRoot) { contentRoot.innerHTML = this.renderPageContent(); this.attachPageEvents(contentRoot); }
     const back = this.query('[data-action="back-customers"]');
