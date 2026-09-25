@@ -66,11 +66,47 @@ export class PricingPage extends PortalLayout {
   }
 
   protected attachPageEvents(contentRoot: HTMLElement): void {
-    const currency = contentRoot.querySelector<HTMLSelectElement>('[data-currency]'); if (currency) this.addEventListener(currency, 'change', () => this.updateCustomer({ ...this.customer, currency: currency.value as Currency }));
-    const add = contentRoot.querySelector<HTMLFormElement>('[data-add-service]'); if (add) this.addEventListener(add, 'submit', (event) => { event.preventDefault(); const data = new FormData(add); const choice = formValue(data, 'service'); const name = choice === 'Other' ? formValue(data, 'customName') : choice; const price = Number(formValue(data, 'price')); if (name && price > 0) this.updateCustomer({ ...this.customer, services: [...this.customer.services, { id: Date.now(), name, price }] }); });
-    contentRoot.querySelectorAll<HTMLFormElement>('[data-edit-service]').forEach((form) => this.addEventListener(form, 'submit', (event) => { event.preventDefault(); const data = new FormData(form); const id = Number(form.dataset.editService); const name = formValue(data, 'name'); const price = Number(formValue(data, 'price')); if (name && price > 0) this.updateCustomer({ ...this.customer, services: this.customer.services.map((item) => item.id === id ? { ...item, name, price } : item) }); }));
-    contentRoot.querySelectorAll<HTMLElement>('[data-delete-service]').forEach((button) => this.addEventListener(button, 'click', () => { if (confirm('Delete this service?')) this.updateCustomer({ ...this.customer, services: this.customer.services.filter((item) => item.id !== Number(button.dataset.deleteService)) }); }));
-    const payment = contentRoot.querySelector<HTMLFormElement>('[data-payment]'); if (payment) this.addEventListener(payment, 'submit', (event) => { event.preventDefault(); const data = new FormData(payment); const amount = Number(formValue(data, 'amount')); const currencyCode = formValue(data, 'currency') as Currency; if (amount >= 0) this.updateCustomer({ ...this.customer, paid: currencyCode === 'KZT' ? amount : amount / fallbackRates[currencyCode] }); });
+    const currency = contentRoot.querySelector<HTMLSelectElement>('[data-currency]');
+    if (currency) this.addEventListener(currency, 'change', () => this.updateCustomer({ ...this.customer, currency: currency.value as Currency }));
+
+    const add = contentRoot.querySelector<HTMLFormElement>('[data-add-service]');
+    if (add) this.addEventListener(add, 'submit', (event) => {
+      event.preventDefault();
+      const data = new FormData(add);
+      const choice = formValue(data, 'service');
+      const name = choice === 'Other' ? formValue(data, 'customName') : choice;
+      const price = Number(formValue(data, 'price'));
+      if (name && price > 0)
+        this.updateCustomer({ ...this.customer, services: [...this.customer.services, { id: Date.now(), name, price }] });
+    });
+
+    contentRoot.querySelectorAll<HTMLFormElement>('[data-edit-service]').forEach(
+      (form) => this.addEventListener(form, 'submit', (event) => {
+        event.preventDefault();
+        const data = new FormData(form);
+        const id = Number(form.dataset.editService);
+        const name = formValue(data, 'name');
+        const price = Number(formValue(data, 'price'));
+        if (name && price > 0)
+          this.updateCustomer({ ...this.customer, services: this.customer.services.map((item) => item.id === id ? { ...item, name, price } : item) });
+      }));
+
+    contentRoot.querySelectorAll<HTMLButtonElement>('[data-delete-service]').forEach(
+      (button) => this.addEventListener(button, 'click', () => {
+        if (confirm('Delete this service?'))
+          this.updateCustomer({ ...this.customer, services: this.customer.services.filter((item) => item.id !== Number(button.dataset.deleteService)) });
+      }));
+
+    const payment = contentRoot.querySelector<HTMLFormElement>('[data-payment]');
+    if (payment)
+      this.addEventListener(payment, 'submit', (event) => {
+        event.preventDefault();
+        const data = new FormData(payment);
+        const amount = Number(formValue(data, 'amount'));
+        const currencyCode = formValue(data, 'currency') as Currency;
+        if (amount >= 0)
+          this.updateCustomer({ ...this.customer, paid: currencyCode === 'KZT' ? amount : amount / fallbackRates[currencyCode] });
+      });
   }
 
   private renderForm(): string {
