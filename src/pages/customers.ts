@@ -64,9 +64,12 @@ export class CustomersPage extends PortalLayout {
 
   protected attachPageEvents(contentRoot: HTMLElement): void {
     contentRoot.querySelectorAll<HTMLElement>('[data-customer]').forEach((row) => this.addEventListener(row, 'click', () => { selectCustomer(Number(row.dataset.customer)); void navigateTo('/documents', 'push'); }));
+
     const search = contentRoot.querySelector<HTMLInputElement>('[data-search-input]');
     if (search) this.addEventListener(search, 'input', () => contentRoot.querySelectorAll<HTMLElement>('[data-search]').forEach((row) => { row.hidden = !(row.dataset.search ?? '').includes(search.value.toLowerCase()); }));
+
     contentRoot.querySelectorAll<HTMLElement>('[data-close-modal]').forEach((button) => this.addEventListener(button, 'click', () => { this.showModal = false; this.setState({}); }));
+
     const form = contentRoot.querySelector<HTMLFormElement>('[data-add-customer]');
     if (form) this.addEventListener(form, 'submit', (event) => { event.preventDefault(); this.createCustomer(new FormData(form)); });
   }

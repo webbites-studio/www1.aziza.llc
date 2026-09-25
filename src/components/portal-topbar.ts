@@ -31,6 +31,7 @@ export class PortalTopbar extends BaseComponent<TopbarState> {
     const addButton = isAdmin && this.state.activeView === 'overview'
       ? `<button class="primary" data-action="add">${icon('plus')}${t('Add customer')}</button>`
       : '';
+
     this.root.innerHTML = `
       <header class="topbar">
         <button class="mobile-menu icon-button" data-action="menu" aria-label="Open menu">${icon('menu')}</button>
@@ -45,10 +46,13 @@ export class PortalTopbar extends BaseComponent<TopbarState> {
         </div>
       </header>
     `;
+
     const languageRoot = this.query<HTMLElement>('[data-component="language"]');
     if (languageRoot) { this.languageSelect = new LanguageSelect(languageRoot); this.languageSelect.mount(); }
+
     const menu = this.query('[data-action="menu"]');
     if (menu) this.addEventListener(menu, 'click', this.onOpenMenu);
+
     const add = this.query('[data-action="add"]');
     if (add && this.onAddCustomer) this.addEventListener(add, 'click', this.onAddCustomer);
   }
