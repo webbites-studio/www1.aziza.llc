@@ -1,24 +1,25 @@
 # Aziza Astana Concierge Portal
 
 A responsive customer and administration portal for managing relocation requests, required documents, travel bookings, schedules, service estimates, and local recommendations in Astana, Kazakhstan.
-ge with indicative USD, EUR, and RUB conversion
+
+- Pricing with indicative USD, EUR, and RUB conversion
 - Curated areas, restaurants, and attractions
 - Responsive desktop and mobile layouts
 - Browser persistence through `localStorage`
 
 ## Technology
 
-- React 19 and TypeScript
-- Vite 8
-- Lucide React icons
-- Vitest, jsdom, and Testing Library
+- TypeScript and the local `BaseComponent` framework
+- Native browser DOM, events, storage, and ES modules
+- BrowserSync development server and Node.js standard-library tests
+- No runtime or UI package dependencies
 - Multi-stage Docker build
 - Unprivileged Nginx runtime
 
 ## Requirements
 
-- Node.js 24 or later
-- npm 11 or later
+- Node.js 18 or later
+- npm 9 or later
 - Docker 29 or later for container deployment
 
 ## Local Development
@@ -27,16 +28,17 @@ Install dependencies and start the development server:
 
 ```bash
 npm ci
+npm run build
 npm run dev
 ```
 
-Open the URL printed by Vite, normally `http://localhost:5173`.
+Open `http://localhost:3000`.
 
-Create and inspect a production build locally:
+Create a production build or serve an existing build locally:
 
 ```bash
 npm run build
-npm run preview
+npm start
 ```
 
 ## Demo Accounts
@@ -56,18 +58,6 @@ Run all unit and integration tests once:
 npm test
 ```
 
-Run tests interactively during development:
-
-```bash
-npm run test:watch
-```
-
-Generate a coverage report in `coverage/`:
-
-```bash
-npm run test:coverage
-```
-
 Run static checks and the production compiler:
 
 ```bash
@@ -75,17 +65,22 @@ npm run lint
 npm run build
 ```
 
-Tests are stored in `src/test/`:
+Tests are stored in `test/` and use Node's built-in test runner.
 
-- `App.unit.test.tsx` verifies login validation and role switching.
-- `App.integration.test.tsx` exercises customer document, schedule, and pricing views as well as administrator document and account creation workflows.
+## Authentication Mode
+
+The portal currently uses local demo credentials and does not contact an identity provider. The framework OAuth2 implementation remains initialized and available under `src/auth/`, `src/services/`, and `src/state/` for later integration. The router keeps `/oauth/login` and `/auth/callback`; local portal routes use a separate temporary local-session guard.
+
+## Temporary Local Data
+
+`src/portal-data.ts` is intentionally a temporary local data source. It contains seed customers, portal option lists, fallback exchange rates, and translations so the frontend can operate without a backend. Once the backend and database become authoritative, this file can be removed after its data contracts are replaced by generated API types and service calls. Shared runtime state and persistence are isolated in `src/state/portal-state.ts` to keep that transition contained.
 
 ## Docker Deployment
 
 Build the production image from the project root:
 
 ```bash
-docker build -t aziza-portal:latest .
+docker build -f deployment/docker/Dockerfile -t aziza-portal:latest .
 ```
 
 Run the container:
@@ -119,15 +114,30 @@ Replace `REGISTRY`, `ORGANIZATION`, and `VERSION` with values for Docker Hub, Gi
 ```text
 .
 |-- src/
-|   |-- test/                 # Unit and integration tests
-|   |-- App.tsx               # Portal UI, state, and workflows
-|   |-- App.css               # Responsive portal styling
-|   |-- index.css             # Global design tokens and typography
-|   `-- main.tsx              # React entry point
-|-- Dockerfile                # Multi-stage production image
-|-- nginx.conf                # Static hosting and SPA fallback
-|-- vite.config.ts            # Vite and Vitest configuration
-`-- package.json              # Scripts and dependencies
+|   |-- auth/                 # Preserved OAuth2 flow
+|   |-- components/           # Framework and reusable portal UI
+|   |-- pages/
+|   |   |-- customers.ts      # Administrator customer directory
+|   |   |-- documents.ts      # Document workflow
+|   |   |-- guide.ts          # Local guide
+|   |   |-- local-login.ts    # Temporary local authentication page
+|   |   |-- overview.ts       # Customer overview
+|   |   |-- pricing.ts        # Services and payment workflow
+|   |   |-- schedule.ts       # Customer timeline and admin calendar
+|   |   `-- router.ts         # Framework route ownership
+|   |-- state/portal-state.ts # Temporary local portal state/persistence
+|   |-- portal-data.ts        # Temporary seed data and translations
+|   `-- index.ts              # Framework entry point
+|-- public/
+|   |-- css/                  # Static stylesheets
+|   |-- dist/                 # Generated TypeScript output
+|   |-- index.html            # Browser entry point
+|   `-- *.svg, *.jpg          # Static visual assets
+|-- deployment/docker/        # Container deployment files
+|-- tsconfig.json             # Shared editor/typecheck configuration
+|-- tsconfig.build.json       # Production compiler configuration
+|-- tsconfig.test.json        # Test typecheck configuration
+`-- package.json              # Build, test, and BrowserSync commands
 ```
 
 ## Data and Production Readiness
