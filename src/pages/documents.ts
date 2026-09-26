@@ -42,6 +42,17 @@ export class DocumentsPage extends PortalLayout {
     `;
   }
 
+  protected attachPageEvents(contentRoot: HTMLElement): void {
+    const addForm = contentRoot.querySelector<HTMLFormElement>('[data-add-document]');
+    if (addForm) this.addEventListener(addForm, 'submit', (event) => { event.preventDefault(); this.addDocument(new FormData(addForm)); });
+
+    contentRoot.querySelectorAll<HTMLElement>('[data-complete]').forEach((button) => this.addEventListener(button, 'click', () => this.complete(Number(button.dataset.complete))));
+    contentRoot.querySelectorAll<HTMLElement>('[data-delete]').forEach((button) => this.addEventListener(button, 'click', () => { if (confirm('Delete this document request?')) this.updateCustomer({ ...this.customer, documents: this.customer.documents.filter((item) => item.id !== Number(button.dataset.delete)) }); }));
+    contentRoot.querySelectorAll<HTMLElement>('[data-approve]').forEach((row) => this.addEventListener(row, 'click', () => this.approve(Number(row.dataset.approve))));
+    contentRoot.querySelectorAll<HTMLFormElement>('[data-flight]').forEach((form) => this.addEventListener(form, 'submit', (event) => { event.preventDefault(); event.stopPropagation(); this.saveFlight(Number(form.dataset.flight), new FormData(form)); }));
+    contentRoot.querySelectorAll<HTMLFormElement>('[data-hotel]').forEach((form) => this.addEventListener(form, 'submit', (event) => { event.preventDefault(); event.stopPropagation(); this.saveHotel(Number(form.dataset.hotel), new FormData(form)); }));
+  }
+
   private renderSection(group: DocumentGroup): string {
     const documents = this.customer.documents.filter((item) => this.groupFor(item) === group);
     const rows = documents.map((item) => this.renderDocument(item)).join('');
@@ -53,17 +64,6 @@ export class DocumentsPage extends PortalLayout {
         ${empty}
       </section>
     `;
-  }
-
-  protected attachPageEvents(contentRoot: HTMLElement): void {
-    const addForm = contentRoot.querySelector<HTMLFormElement>('[data-add-document]');
-    if (addForm) this.addEventListener(addForm, 'submit', (event) => { event.preventDefault(); this.addDocument(new FormData(addForm)); });
-
-    contentRoot.querySelectorAll<HTMLElement>('[data-complete]').forEach((button) => this.addEventListener(button, 'click', () => this.complete(Number(button.dataset.complete))));
-    contentRoot.querySelectorAll<HTMLElement>('[data-delete]').forEach((button) => this.addEventListener(button, 'click', () => { if (confirm('Delete this document request?')) this.updateCustomer({ ...this.customer, documents: this.customer.documents.filter((item) => item.id !== Number(button.dataset.delete)) }); }));
-    contentRoot.querySelectorAll<HTMLElement>('[data-approve]').forEach((row) => this.addEventListener(row, 'click', () => this.approve(Number(row.dataset.approve))));
-    contentRoot.querySelectorAll<HTMLFormElement>('[data-flight]').forEach((form) => this.addEventListener(form, 'submit', (event) => { event.preventDefault(); event.stopPropagation(); this.saveFlight(Number(form.dataset.flight), new FormData(form)); }));
-    contentRoot.querySelectorAll<HTMLFormElement>('[data-hotel]').forEach((form) => this.addEventListener(form, 'submit', (event) => { event.preventDefault(); event.stopPropagation(); this.saveHotel(Number(form.dataset.hotel), new FormData(form)); }));
   }
 
   private renderDocument(item: DocumentItem): string {
