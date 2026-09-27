@@ -135,8 +135,8 @@ export class DocumentsPage extends PortalLayout {
     this.updateCustomer({ ...this.customer, documents: [...this.customer.documents, { id: Date.now(), name, category: ['Flight ticket', 'Hotel booking'].includes(choice) ? 'Travel' : 'Required', status: 'Missing', documentGroup: formValue(data, 'group') as DocumentGroup }] });
   }
 
-  private complete(id: number): void { this.updateCustomer({ ...this.customer, documents: this.customer.documents.map((item) => item.id === id && item.status === 'Missing' ? { ...item, status: 'Uploaded', uploadedAt: today() } : item) }); }
-  private approve(id: number): void { if (!this.isAdmin) this.updateCustomer({ ...this.customer, documents: this.customer.documents.map((item) => item.id === id && item.status === 'Uploaded' ? { ...item, status: 'Approved' } : item) }); }
+  private complete(id: number): void { this.updateCustomer({ ...this.customer, documents: this.customer.documents.map((item: DocumentItem) => item.id === id && item.status === 'Missing' ? { ...item, status: 'Uploaded', uploadedAt: today() } : item) }); }
+  private approve(id: number): void { if (!this.isAdmin) this.updateCustomer({ ...this.customer, documents: this.customer.documents.map((item: DocumentItem) => item.id === id && item.status === 'Uploaded' ? { ...item, status: 'Approved' } : item) }); }
   private saveFlight(id: number, data: FormData): void { this.updateCustomer({ ...this.customer, arrivalDate: formValue(data, 'arrivalDate'), departureDate: formValue(data, 'departureDate'), documents: this.customer.documents.map((item) => item.id === id ? { ...item, status: 'Uploaded', flightNumber: formValue(data, 'flightNumber'), arrivalTime: formValue(data, 'arrivalTime'), departureTime: formValue(data, 'departureTime'), uploadedAt: today() } : item) }); }
   private saveHotel(id: number, data: FormData): void { this.updateCustomer({ ...this.customer, documents: this.customer.documents.map((item) => item.id === id ? { ...item, status: 'Uploaded', hotelName: formValue(data, 'hotelName'), uploadedAt: today() } : item) }); }
 }
