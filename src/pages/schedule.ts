@@ -17,8 +17,16 @@ export class SchedulePage extends PortalLayout {
   protected attachPageEvents(contentRoot: HTMLElement): void {
     contentRoot.querySelectorAll<HTMLElement>('[data-mode]').forEach((button) => this.addEventListener(button, 'click', () => { this.mode = button.dataset.mode as CalendarMode; this.setState({}); }));
     contentRoot.querySelectorAll<HTMLElement>('[data-shift]').forEach((button) => this.addEventListener(button, 'click', () => { this.anchorDate = shiftCalendarDate(this.anchorDate, this.mode, Number(button.dataset.shift)); this.setState({}); }));
+
     const form = contentRoot.querySelector<HTMLFormElement>('[data-appointment]');
-    if (form) this.addEventListener(form, 'submit', (event) => { event.preventDefault(); const data = new FormData(form); const choice = formValue(data, 'appointment'); const title = choice === 'Other' ? formValue(data, 'customName') : choice; if (title) this.updateCustomer({ ...this.customer, schedule: [...this.customer.schedule, { id: Date.now(), date: formValue(data, 'date'), time: formValue(data, 'time'), title, location: formValue(data, 'location') }] }); });
+    if (form) this.addEventListener(form, 'submit', (event) => {
+      event.preventDefault();
+      const data = new FormData(form);
+      const choice = formValue(data, 'appointment');
+      const title = choice === 'Other' ? formValue(data, 'customName') : choice;
+      if (title)
+        this.updateCustomer({ ...this.customer, schedule: [...this.customer.schedule, { id: Date.now(), date: formValue(data, 'date'), time: formValue(data, 'time'), title, location: formValue(data, 'location') }] });
+    });
   }
 
   private renderTimeline(): string {
