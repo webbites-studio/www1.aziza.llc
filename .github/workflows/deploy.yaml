@@ -49,8 +49,8 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v5
         with:
-          # Upload dist folder
-          path: './dist'
+          # public/ is the web root; npm run build emits into public/dist
+          path: './public'
 
       - name: Deploy to GitHub Pages
         id: deployment
